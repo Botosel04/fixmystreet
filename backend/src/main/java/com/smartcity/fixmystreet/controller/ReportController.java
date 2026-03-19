@@ -13,7 +13,6 @@ public class ReportController {
         System.out.println("Issue Type: " + incomingData.getIssueType());
         System.out.println("Address:    " + incomingData.getAddress());
         System.out.println("Details:    " + incomingData.getDescription());
-
         return "Backend succesfully received the report";
     }
 }
