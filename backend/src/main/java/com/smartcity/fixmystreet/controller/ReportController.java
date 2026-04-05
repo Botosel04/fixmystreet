@@ -7,6 +7,8 @@ import com.smartcity.fixmystreet.repository.ReportedIssueRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("api/issues")
@@ -30,6 +32,11 @@ public class ReportController {
         newIssue.setLocation(location);
 
         return repository.save(newIssue);
+    }
 
+    @GetMapping("/all")
+    public List<ReportedIssue> getAllIssues() {
+        System.out.println("React is asking for all issues...");
+        return repository.findAll(); // This runs SELECT * FROM reported_issues
     }
 }
