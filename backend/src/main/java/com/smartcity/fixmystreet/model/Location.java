@@ -1,25 +1,36 @@
 package com.smartcity.fixmystreet.model;
 
+import jakarta.persistence.Embeddable;
+
+@Embeddable
 public class Location {
-    private double latitude;
-    private double longitude;
-    private String streetAddress;
+    private double x;
+    private double y;
+    private String address;
 
-    public Location(double latitude, double longitude, String streetAddress){
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.streetAddress = streetAddress;
+    public Location() {}
+
+    public double getX() {
+        return x;
     }
 
-    public double getLatitude() {
-        return latitude;
+    public void setX(double x) {
+        this.x = x;
     }
 
-    public double getLongitude() {
-        return longitude;
+    public double getY() {
+        return y;
     }
 
-    public String getStreetAddress() {
-        return streetAddress;
+    public void setY(double y) {
+        this.y = y;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 }

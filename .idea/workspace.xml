@@ -5,15 +5,27 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2b035349-7de4-41cc-872e-4022a1052522" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/repository/ReportedIssueRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Deliverable.docx" beforeDir="false" afterPath="$PROJECT_DIR$/Deliverable.docx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/controller/ReportController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/controller/ReportController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/model/Location.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/model/Location.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/model/ReportIssue.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/model/ReportedIssue.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="CopilotPersistence">
+    <persistenceIdMap>
+      <entry key="_/home/filip/Faculty/Year3/Sem 2/fixmystreet" value="3AZQ90ZE6eGi82xvK6vTM377qig" />
+    </persistenceIdMap>
+  </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="23" />
+    <option name="cachedIndexableFilesCount" value="49" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -64,7 +76,7 @@
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/filip/Coding/Projects/fixmystreet&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/filip/Faculty/Year3/Sem 2/fixmystreet&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -73,7 +85,7 @@
     &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;ml.llm.AcpAgentsConfigurable&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
     &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
@@ -85,6 +97,10 @@
   </component>
   <component name="RunManager">
     <configuration name="FixmystreetApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <envs>
+        <env name="DB_USER" value="filip" />
+        <env name="DB_PASSWORD" value="filip314" />
+      </envs>
       <module name="fixmystreet" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="com.smartcity.fixmystreet.FixmystreetApplication" />
       <method v="2">
@@ -114,6 +130,10 @@
       <workItem from="1773299659134" duration="5181000" />
       <workItem from="1773904439365" duration="4310000" />
       <workItem from="1774508212599" duration="7000" />
+      <workItem from="1775109666281" duration="2526000" />
+      <workItem from="1775385250118" duration="3588000" />
+      <workItem from="1775398274525" duration="3755000" />
+      <workItem from="1775402311865" duration="1448000" />
     </task>
     <servers />
   </component>
@@ -123,5 +143,13 @@
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
     <select />
+  </component>
+  <component name="github-copilot-workspace">
+    <instructionFileLocations>
+      <option value=".github/instructions" />
+    </instructionFileLocations>
+    <promptFileLocations>
+      <option value=".github/prompts" />
+    </promptFileLocations>
   </component>
 </project>

@@ -1,18 +1,35 @@
 package com.smartcity.fixmystreet.controller;
 
 import com.smartcity.fixmystreet.dto.ReportRequest;
-import com.smartcity.fixmystreet.model.ReportIssue;
+import com.smartcity.fixmystreet.model.Location;
+import com.smartcity.fixmystreet.model.ReportedIssue;
+import com.smartcity.fixmystreet.repository.ReportedIssueRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("api/issues")
 public class ReportController {
+    private final ReportedIssueRepository repository;
+
+    @Autowired
+    public ReportController(ReportedIssueRepository repository) {
+        this.repository = repository;
+    }
+
     @PostMapping("/report")
-    public String receiveReport(@RequestBody ReportRequest incomingData){
-        System.out.println("Issue Type: " + incomingData.getIssueType());
-        System.out.println("Address:    " + incomingData.getAddress());
-        System.out.println("Details:    " + incomingData.getDescription());
-        return "Backend succesfully received the report";
+    public ReportedIssue receiveReport(@RequestBody ReportRequest incomingData){
+        System.out.println("Saving new issue from React");
+        ReportedIssue newIssue = new ReportedIssue();
+        newIssue.setIssueType(incomingData.getIssueType());
+        newIssue.setDescription(incomingData.getDescription());
+
+        Location location = new Location();
+        location.setAddress(incomingData.getAddress());
+        newIssue.setLocation(location);
+
+        return repository.save(newIssue);
+
     }
 }
