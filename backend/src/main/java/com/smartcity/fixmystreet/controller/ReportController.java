@@ -37,6 +37,6 @@ public class ReportController {
     @GetMapping("/all")
     public List<ReportedIssue> getAllIssues() {
         System.out.println("React is asking for all issues...");
-        return repository.findAll(); // This runs SELECT * FROM reported_issues
+        return repository.findAll();
     }
 }
