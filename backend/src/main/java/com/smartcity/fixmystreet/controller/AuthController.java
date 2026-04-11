@@ -1,5 +1,6 @@
 package com.smartcity.fixmystreet.controller;
 
+import com.smartcity.fixmystreet.dto.LoginRequest;
 import com.smartcity.fixmystreet.dto.RegisterRequest;
 import com.smartcity.fixmystreet.model.User;
 import com.smartcity.fixmystreet.service.UserService;
@@ -27,6 +28,17 @@ public class AuthController {
         }catch (RuntimeException e){
             return ResponseEntity.badRequest().body(e.getMessage());
 
+        }
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest){
+        try{
+            User loggedinUser = userService.loginUser(loginRequest);
+            System.out.println("User successfully logged in : " + loggedinUser.getEmail());
+            return ResponseEntity.ok(loggedinUser);
+        }catch (RuntimeException e){
+            return ResponseEntity.status(401).body(e.getMessage());
         }
     }
 

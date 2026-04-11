@@ -1,18 +1,22 @@
 package com.smartcity.fixmystreet.service;
 
+import com.smartcity.fixmystreet.dto.LoginRequest;
 import com.smartcity.fixmystreet.dto.RegisterRequest;
 import com.smartcity.fixmystreet.model.User;
 import com.smartcity.fixmystreet.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public User registerUser(RegisterRequest request) {
@@ -35,10 +39,18 @@ public class UserService {
         User newUser = new User();
         newUser.setUserName(request.getUserName());
         newUser.setEmail(request.getEmail());
-        newUser.setPassword(request.getPassword());
+
+        String hashedPassword = passwordEncoder.encode(request.getPassword());
+        newUser.setPassword(hashedPassword);
         newUser.setRole(request.getRole());
 
         return userRepository.save(newUser);
     }
-
+    public User loginUser(LoginRequest loginRequest) {
+        User user = userRepository.findByEmail(loginRequest.getEmail());
+        if (user == null || !passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+            throw new RuntimeException("Invalid email or password");
+        }
+        return user;
+    }
 }
