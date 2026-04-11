@@ -5,12 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2b035349-7de4-41cc-872e-4022a1052522" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/controller/AuthController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/dto/RegisterRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/service/UserService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/config/SecurityConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/dto/LoginRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/controller/ReportController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/controller/ReportController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/model/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/model/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Deliverable.docx" beforeDir="false" afterPath="$PROJECT_DIR$/Deliverable.docx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/controller/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/service/UserService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,13 +22,14 @@
   <component name="CopilotPersistence">
     <persistenceIdMap>
       <entry key="_/home/filip/Faculty/Year3/Sem 2/fixmystreet" value="3AZQ90ZE6eGi82xvK6vTM377qig" />
+      <entry key="_/home/filip/Faculty/Year3/Sem 2/fixmystreet/backend" value="3CCoIia4gvBletvUGomragzRoG6" />
     </persistenceIdMap>
   </component>
   <component name="CopilotUserSelectedChatMode">
     <option name="chatModeId" value="Agent" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="51" />
+    <option name="cachedIndexableFilesCount" value="31" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -75,8 +78,9 @@
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
     &quot;Spring Boot.FixmystreetApplication.executor&quot;: &quot;Run&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
     &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;feature/user-auth&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;/home/filip/Faculty/Year3/Sem 2/fixmystreet&quot;,
@@ -139,6 +143,9 @@
       <workItem from="1775402311865" duration="3493000" />
       <workItem from="1775460877866" duration="1385000" />
       <workItem from="1775481942945" duration="3656000" />
+      <workItem from="1775898697935" duration="119000" />
+      <workItem from="1775898831889" duration="4706000" />
+      <workItem from="1775918563966" duration="340000" />
     </task>
     <servers />
   </component>
