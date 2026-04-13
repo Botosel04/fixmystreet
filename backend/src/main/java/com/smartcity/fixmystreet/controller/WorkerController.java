@@ -38,4 +38,18 @@ public class WorkerController {
         issueService.claimIssue(issueId, workerEmail);
         return ResponseEntity.ok("Issue successfully claimed by " + workerEmail);
     }
+
+    @PatchMapping("/issues/{issueId}/start")
+    public ResponseEntity<String> startIssue(@PathVariable Long issueId){
+        String workerEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        issueService.startIssue(issueId, workerEmail);
+        return ResponseEntity.ok("Issue successfully started");
+    }
+
+    @PatchMapping("/issues/{issueId}/resolve")
+    public ResponseEntity<String> resolveIssue(@PathVariable Long issueId){
+        String workerEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        issueService.resolveIssue(issueId, workerEmail);
+        return ResponseEntity.ok("Issue successfully resolved");
+    }
 }

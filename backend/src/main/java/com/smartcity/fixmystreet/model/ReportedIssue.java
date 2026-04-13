@@ -102,7 +102,7 @@ public class ReportedIssue {
     public void setEstimatedHours(Integer estimatedHours) {
         this.estimatedHours = estimatedHours;
     }
-    public User getUser() {
+    public User getAssignedWorker() {
         return assigned_worker;
     }
     public void setAssignedWorker(User worker) {
