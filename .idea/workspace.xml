@@ -6,9 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="2b035349-7de4-41cc-872e-4022a1052522" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/controller/WorkerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/controller/WorkerController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/model/ReportedIssue.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/model/ReportedIssue.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/service/IssueService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/service/IssueService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.~lock.Deliverable.docx#" beforeDir="false" afterPath="$PROJECT_DIR$/.~lock.Deliverable.docx#" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Deliverable.docx" beforeDir="false" afterPath="$PROJECT_DIR$/Deliverable.docx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -146,7 +145,8 @@
       <workItem from="1775983496525" duration="8926000" />
       <workItem from="1775995692143" duration="1430000" />
       <workItem from="1776004373750" duration="6790000" />
-      <workItem from="1776083956598" duration="1585000" />
+      <workItem from="1776083956598" duration="2863000" />
+      <workItem from="1776350931470" duration="2625000" />
     </task>
     <servers />
   </component>
