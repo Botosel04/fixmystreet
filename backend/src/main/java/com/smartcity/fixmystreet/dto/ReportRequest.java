@@ -1,32 +1,28 @@
 package com.smartcity.fixmystreet.dto;
 
 public class ReportRequest {
-    private String issueType;
+    private Long categoryId;
     private String address;
+    private Double longitude;
+    private Double latitude;
     private String description;
 
+    public ReportRequest(){
 
-    public String getIssueType() {
-        return issueType;
     }
 
-    public void setIssueType(String issueType) {
-        this.issueType = issueType;
-    }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 
-    public String getAddress() {
-        return address;
-    }
+    public Long getCategoryId() { return categoryId; }
+    public void setCategoryId(Long categoryId) { this.categoryId = categoryId; }
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
+    public Double getLatitude() { return latitude; }
+    public void setLatitude(Double latitude) { this.latitude = latitude; }
 
-    public String getDescription() {
-        return description;
-    }
+    public Double getLongitude() { return longitude; }
+    public void setLongitude(Double longitude) { this.longitude = longitude; }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
 }

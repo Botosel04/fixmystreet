@@ -4,25 +4,26 @@ import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class Location {
-    private double x;
-    private double y;
+
+    private Double x;
+    private Double y;
     private String address;
 
     public Location() {}
 
-    public double getX() {
+    public Double getX() {
         return x;
     }
 
-    public void setX(double x) {
+    public void setX(Double x) {
         this.x = x;
     }
 
-    public double getY() {
+    public Double getY() {
         return y;
     }
 
-    public void setY(double y) {
+    public void setY(Double y) {
         this.y = y;
     }
 

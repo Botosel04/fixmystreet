@@ -12,6 +12,10 @@ public class ReportedIssue {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="user_id", nullable = true)
+    private User author;
+
     @Column(nullable = false)
     private String issueType;
 
@@ -32,7 +36,9 @@ public class ReportedIssue {
 
     private String photoUrl;
 
-    private String type;
+   @ManyToOne(fetch = FetchType.LAZY)
+   @JoinColumn(name = "category_id", nullable = false)
+   private IssueCategory issueCategory;
 
     private Integer estimatedHours;
 
@@ -47,12 +53,6 @@ public class ReportedIssue {
     }
     public void setId(Long id) {
         this.id = id;
-    }
-    public String getIssueType() {
-        return issueType;
-    }
-    public void setIssueType(String issueType) {
-        this.issueType = issueType;
     }
     public String getDescription() {
         return description;
@@ -90,11 +90,11 @@ public class ReportedIssue {
     public void setPhotoUrl(String photoUrl) {
         this.photoUrl = photoUrl;
     }
-    public String getType() {
-        return type;
+    public IssueCategory getType() {
+        return this.issueCategory;
     }
-    public void setType(String type) {
-        this.type = type;
+    public void setIssueCategory(IssueCategory issueCategory) {
+        this.issueCategory = issueCategory;
     }
     public Integer getEstimatedHours() {
         return estimatedHours;
@@ -108,4 +108,6 @@ public class ReportedIssue {
     public void setAssignedWorker(User worker) {
         this.assigned_worker = worker;
     }
+    public User getAuthor(){return this.author;}
+    public void setAuthor(User author){this.author = author;}
 }

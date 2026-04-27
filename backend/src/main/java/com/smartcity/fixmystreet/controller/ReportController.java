@@ -4,7 +4,11 @@ import com.smartcity.fixmystreet.dto.ReportRequest;
 import com.smartcity.fixmystreet.model.Location;
 import com.smartcity.fixmystreet.model.ReportedIssue;
 import com.smartcity.fixmystreet.repository.ReportedIssueRepository;
+import com.smartcity.fixmystreet.service.IssueService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,30 +17,30 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("api/issues")
 public class ReportController {
-    private final ReportedIssueRepository repository;
+    private final IssueService issueService;
 
     @Autowired
-    public ReportController(ReportedIssueRepository repository) {
-        this.repository = repository;
+    public ReportController(IssueService issueService) {
+        this.issueService = issueService;
     }
 
+
     @PostMapping("/report")
-    public ReportedIssue receiveReport(@RequestBody ReportRequest incomingData){
-        System.out.println("Saving new issue from React");
-        ReportedIssue newIssue = new ReportedIssue();
-        newIssue.setIssueType(incomingData.getIssueType());
-        newIssue.setDescription(incomingData.getDescription());
+    public ResponseEntity<ReportedIssue> receiveReport(@RequestBody ReportRequest incomingData){
+        String citizenEmail = null;
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if(auth != null && auth.isAuthenticated() && !"guestUser".equals(auth.getName())){
+            citizenEmail = auth.getName();
+        }
 
-        Location location = new Location();
-        location.setAddress(incomingData.getAddress());
-        newIssue.setLocation(location);
+        ReportedIssue createdIssue = issueService.createIssue(incomingData, citizenEmail);
 
-        return repository.save(newIssue);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdIssue);
     }
 
     @GetMapping("/all")
-    public List<ReportedIssue> getAllIssues() {
-        System.out.println("React is asking for all issues...");
-        return repository.findAll();
+    public ResponseEntity<List<ReportedIssue>> getAllIssues() {
+        return ResponseEntity.ok(issueService.getAllIssues());
     }
+
 }

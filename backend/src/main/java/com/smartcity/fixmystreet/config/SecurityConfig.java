@@ -28,6 +28,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/issues/report").permitAll()
                         .requestMatchers("/api/worker/**").hasAuthority("CITY_WORKER")
                         .requestMatchers("/api/citizen/**").hasAuthority("CITIZEN")
+                        .requestMatchers("/api/issues/*/comments").authenticated()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
