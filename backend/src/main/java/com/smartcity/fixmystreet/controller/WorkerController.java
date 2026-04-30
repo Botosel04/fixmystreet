@@ -1,5 +1,6 @@
 package com.smartcity.fixmystreet.controller;
 
+import com.smartcity.fixmystreet.model.IssueStatus;
 import com.smartcity.fixmystreet.model.ReportedIssue;
 import com.smartcity.fixmystreet.repository.ReportedIssueRepository;
 import com.smartcity.fixmystreet.service.IssueService;
@@ -29,7 +30,13 @@ public class WorkerController {
 
     @GetMapping("/backlog")
     public List<ReportedIssue> getBacklog(){
-        return  repository.findByStatus("BACKLOG");
+        return  repository.findByStatus(IssueStatus.BACKLOG);
+    }
+
+    @GetMapping("/backlog/nearby")
+    public ResponseEntity<List<ReportedIssue>> getNearbyBacklogIssues(@RequestParam Long IssueId, @RequestParam double lat, @RequestParam double lng, @RequestParam double radiusKm){
+        List<ReportedIssue> nearbyIssues = issueService.getNearbyTasks(IssueId, lat, lng, radiusKm);
+        return ResponseEntity.ok(nearbyIssues);
     }
 
     @PatchMapping("/issues/{issueId}/claim")

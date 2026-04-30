@@ -1,5 +1,6 @@
 package com.smartcity.fixmystreet.controller;
 
+import com.smartcity.fixmystreet.dto.AnalyticsResponse;
 import com.smartcity.fixmystreet.dto.ReportRequest;
 import com.smartcity.fixmystreet.model.Location;
 import com.smartcity.fixmystreet.model.ReportedIssue;
@@ -43,4 +44,22 @@ public class ReportController {
         return ResponseEntity.ok(issueService.getAllIssues());
     }
 
+    @GetMapping("/my-impact")
+    public ResponseEntity<AnalyticsResponse> getMyAnalytics(){
+        String citizenEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        AnalyticsResponse stats = issueService.getImpactAnalysis(citizenEmail);
+        return ResponseEntity.ok(stats);
+    }
+
+    @GetMapping("/my-history")
+    public ResponseEntity<List<ReportedIssue>> getMyHistory(){
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return ResponseEntity.ok(issueService.getMyIssues(email));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ReportedIssue> getSingleIssue(@PathVariable Long id){
+        ReportedIssue issue = issueService.getIssueById(id);
+        return ResponseEntity.ok(issue);
+    }
 }

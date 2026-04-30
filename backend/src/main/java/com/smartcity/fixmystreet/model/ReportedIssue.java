@@ -16,8 +16,6 @@ public class ReportedIssue {
     @JoinColumn(name="user_id", nullable = true)
     private User author;
 
-    @Column(nullable = false)
-    private String issueType;
 
     @Column(nullable = false, length = 1000)
     private String description;
@@ -34,6 +32,7 @@ public class ReportedIssue {
 
     private String name;
 
+    @Column(columnDefinition = "TEXT")
     private String photoUrl;
 
    @ManyToOne(fetch = FetchType.LAZY)

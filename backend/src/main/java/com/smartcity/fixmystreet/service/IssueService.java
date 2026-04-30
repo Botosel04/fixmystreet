@@ -1,5 +1,6 @@
 package com.smartcity.fixmystreet.service;
 
+import com.smartcity.fixmystreet.dto.AnalyticsResponse;
 import com.smartcity.fixmystreet.dto.CommentRequest;
 import com.smartcity.fixmystreet.dto.CommentResponse;
 import com.smartcity.fixmystreet.dto.ReportRequest;
@@ -138,6 +139,39 @@ public class IssueService {
             return response;
         }).collect(Collectors.toList());
     }
+
+    public List<ReportedIssue> getNearbyTasks(Long issueId, Double lat, Double lon, Double radiusKm){
+        return reportedIssueRepository.findNearbyBacklogIssues(issueId, lat, lon, radiusKm);
+    }
+
+    public AnalyticsResponse getImpactAnalysis(String userEmail){
+        List<ReportedIssue> userIssues = reportedIssueRepository.findByAuthorEmail(userEmail);
+        long total = userIssues.size();
+
+        long resolved = userIssues.stream().filter(issue -> issue.getStatus() == IssueStatus.FINISHED).count();
+        double rate = 0.0;
+        if(total > 0){
+            rate = ((double) resolved / total) * 100;
+            rate = Math.round(rate * 10.0) / 10.0;
+        }
+        AnalyticsResponse response = new AnalyticsResponse();
+        response.setTotalReported(total);
+        response.setTotalResolved(resolved);
+        response.setResolutionRate(rate);
+
+        return response;
+    }
+
+    public List<ReportedIssue> getMyIssues(String email){
+        return reportedIssueRepository.findByAuthorEmail(email);
+    }
+
+    public ReportedIssue getIssueById(Long id){
+        return reportedIssueRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Issue not found with id: " + id));
+    }
+
+
 
 
 
