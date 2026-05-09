@@ -1,10 +1,9 @@
 package com.smartcity.fixmystreet.controller;
 
 import com.smartcity.fixmystreet.dto.AnalyticsResponse;
+import com.smartcity.fixmystreet.dto.IssueResponse;
 import com.smartcity.fixmystreet.dto.ReportRequest;
-import com.smartcity.fixmystreet.model.Location;
 import com.smartcity.fixmystreet.model.ReportedIssue;
-import com.smartcity.fixmystreet.repository.ReportedIssueRepository;
 import com.smartcity.fixmystreet.service.IssueService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,7 +26,7 @@ public class ReportController {
 
 
     @PostMapping("/report")
-    public ResponseEntity<ReportedIssue> receiveReport(@RequestBody ReportRequest incomingData){
+    public ResponseEntity<IssueResponse> receiveReport(@RequestBody ReportRequest incomingData){
         String citizenEmail = null;
         var auth = SecurityContextHolder.getContext().getAuthentication();
         if(auth != null && auth.isAuthenticated() && !"guestUser".equals(auth.getName())){
@@ -35,13 +34,16 @@ public class ReportController {
         }
 
         ReportedIssue createdIssue = issueService.createIssue(incomingData, citizenEmail);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdIssue);
+        return ResponseEntity.status(HttpStatus.CREATED).body(IssueResponse.fromEntity(createdIssue));
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<ReportedIssue>> getAllIssues() {
-        return ResponseEntity.ok(issueService.getAllIssues());
+    public ResponseEntity<List<IssueResponse>> getAllIssues() {
+        List<IssueResponse> issues = issueService.getAllIssues()
+                .stream()
+                .map(IssueResponse::fromEntity)
+                .toList();
+        return ResponseEntity.ok(issues);
     }
 
     @GetMapping("/my-impact")
@@ -52,14 +54,18 @@ public class ReportController {
     }
 
     @GetMapping("/my-history")
-    public ResponseEntity<List<ReportedIssue>> getMyHistory(){
+    public ResponseEntity<List<IssueResponse>> getMyHistory(){
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        return ResponseEntity.ok(issueService.getMyIssues(email));
+        List<IssueResponse> issues = issueService.getMyIssues(email)
+                .stream()
+                .map(IssueResponse::fromEntity)
+                .toList();
+        return ResponseEntity.ok(issues);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ReportedIssue> getSingleIssue(@PathVariable Long id){
+    public ResponseEntity<IssueResponse> getSingleIssue(@PathVariable Long id){
         ReportedIssue issue = issueService.getIssueById(id);
-        return ResponseEntity.ok(issue);
+        return ResponseEntity.ok(IssueResponse.fromEntity(issue));
     }
 }

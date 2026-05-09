@@ -2,6 +2,7 @@ package com.smartcity.fixmystreet.service;
 
 import com.smartcity.fixmystreet.dto.LoginRequest;
 import com.smartcity.fixmystreet.dto.RegisterRequest;
+import com.smartcity.fixmystreet.model.Role;
 import com.smartcity.fixmystreet.model.User;
 import com.smartcity.fixmystreet.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +43,7 @@ public class UserService {
 
         String hashedPassword = passwordEncoder.encode(request.getPassword());
         newUser.setPassword(hashedPassword);
-        newUser.setRole(request.getRole());
+        newUser.setRole(Role.CITIZEN);
 
         return userRepository.save(newUser);
     }

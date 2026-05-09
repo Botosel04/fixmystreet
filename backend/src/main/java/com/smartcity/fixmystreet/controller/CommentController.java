@@ -24,10 +24,10 @@ public class CommentController {
     }
 
     @PostMapping
-    public ResponseEntity<Comment> addComment(@PathVariable Long issueId, @RequestBody CommentRequest request){
+    public ResponseEntity<CommentResponse> addComment(@PathVariable Long issueId, @RequestBody CommentRequest request){
         String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         Comment savedComment = issueService.addCommentToIssue(issueId, userEmail, request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedComment);
+        return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(savedComment));
     }
 
     @GetMapping
@@ -36,4 +36,13 @@ public class CommentController {
         return ResponseEntity.ok(comments);
     }
 
+    private CommentResponse toResponse(Comment comment) {
+        CommentResponse response = new CommentResponse();
+        response.setId(comment.getId());
+        response.setText(comment.getText());
+        response.setCreatedAt(comment.getCreatedAt());
+        response.setAuthorEmail(comment.getAuthor().getEmail());
+        response.setAuthorRole(comment.getAuthor().getRole().name());
+        return response;
+    }
 }

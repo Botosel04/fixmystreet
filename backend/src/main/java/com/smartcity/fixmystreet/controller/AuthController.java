@@ -3,6 +3,7 @@ package com.smartcity.fixmystreet.controller;
 import com.smartcity.fixmystreet.dto.AuthResponse;
 import com.smartcity.fixmystreet.dto.LoginRequest;
 import com.smartcity.fixmystreet.dto.RegisterRequest;
+import com.smartcity.fixmystreet.dto.UserResponse;
 import com.smartcity.fixmystreet.model.User;
 import com.smartcity.fixmystreet.service.JwtService;
 import com.smartcity.fixmystreet.service.UserService;
@@ -23,13 +24,13 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest registerRequest) {
+    public ResponseEntity<UserResponse> registerUser(@RequestBody RegisterRequest registerRequest) {
         try {
             System.out.println("Registering User: " + registerRequest.getEmail());
             User newUser = userService.registerUser(registerRequest);
-            return ResponseEntity.ok(newUser);
+            return ResponseEntity.ok(UserResponse.fromUser(newUser));
         }catch (RuntimeException e){
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(null);
 
         }
     }
@@ -48,4 +49,3 @@ public class AuthController {
     }
 
 }
-
