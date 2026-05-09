@@ -1,4 +1,5 @@
-import {Link} from "react-router";
+import { Link } from "react-router-dom";
+
 export default function NavBar(){
     return(
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark mb-4 shadow">
