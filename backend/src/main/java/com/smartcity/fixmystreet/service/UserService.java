@@ -24,9 +24,6 @@ public class UserService {
         if (request.getUserName() == null || request.getUserName().isBlank()) {
             throw new RuntimeException("Username is required");
         }
-        if (request.getRole() == null) {
-            throw new RuntimeException("Role is required");
-        }
         if (request.getEmail() == null || request.getEmail().isBlank()) {
             throw new RuntimeException("Email is required");
         }

@@ -25,27 +25,20 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<UserResponse> registerUser(@RequestBody RegisterRequest registerRequest) {
-        try {
-            System.out.println("Registering User: " + registerRequest.getEmail());
-            User newUser = userService.registerUser(registerRequest);
-            return ResponseEntity.ok(UserResponse.fromUser(newUser));
-        }catch (RuntimeException e){
-            return ResponseEntity.badRequest().body(null);
-
-        }
+        System.out.println("Registering User: " + registerRequest.getEmail());
+        User newUser = userService.registerUser(registerRequest);
+        UserResponse userResponse = new UserResponse(newUser.getId(), newUser.getUserName(), newUser.getEmail(), newUser.getRole());
+        return ResponseEntity.ok(userResponse);
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest){
-        try{
-            User loggedinUser = userService.loginUser(loginRequest);
-            String token = jwtService.generateToken(loggedinUser);
-            AuthResponse response = new AuthResponse(token, loggedinUser.getEmail(), loggedinUser.getRole().name());
-            System.out.println("User successfully logged in : " + loggedinUser.getEmail());
-            return ResponseEntity.ok(response);
-        }catch (RuntimeException e){
-            return ResponseEntity.status(401).body(e.getMessage());
-        }
+        User loggedinUser = userService.loginUser(loginRequest);
+        String token = jwtService.generateToken(loggedinUser);
+        AuthResponse response = new AuthResponse(token, loggedinUser.getEmail(), loggedinUser.getRole().name());
+        System.out.println("User successfully logged in : " + loggedinUser.getEmail());
+        return ResponseEntity.ok(response);
     }
 
 }
+
