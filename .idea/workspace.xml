@@ -5,24 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2b035349-7de4-41cc-872e-4022a1052522" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/frontend/src/auth/AuthProvider.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/HomePage.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/IssuePage.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/MapComponent.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/Profile.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/RegisterForm.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/config/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/dto/IssueResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/dto/IssueResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/dto/ReportRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/dto/ReportRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/model/ReportedIssue.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/model/ReportedIssue.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/service/IssueService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/service/IssueService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/test/java/com/smartcity/fixmystreet/IssueServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/test/java/com/smartcity/fixmystreet/IssueServiceTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/App.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/LoginForm.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/LoginForm.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/NavBar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/NavBar.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/ReportForm.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/ReportForm.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -205,6 +188,7 @@
       <workItem from="1778399543480" duration="8689000" />
       <workItem from="1778421184106" duration="2948000" />
       <workItem from="1778514444429" duration="2909000" />
+      <workItem from="1778661942913" duration="494000" />
     </task>
     <servers />
   </component>
