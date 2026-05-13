@@ -6,7 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="2b035349-7de4-41cc-872e-4022a1052522" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/ReportForm.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/ReportForm.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/config/JwtFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/config/JwtFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/auth/AuthProvider.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/auth/AuthProvider.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -188,7 +189,7 @@
       <workItem from="1778399543480" duration="8689000" />
       <workItem from="1778421184106" duration="2948000" />
       <workItem from="1778514444429" duration="2909000" />
-      <workItem from="1778661942913" duration="494000" />
+      <workItem from="1778661942913" duration="1164000" />
     </task>
     <servers />
   </component>

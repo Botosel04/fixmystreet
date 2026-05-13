@@ -1,4 +1,5 @@
 import React, { createContext, useEffect, useState } from "react";
+import axios from "axios";
 
 export const AuthContext = createContext(null);
 
@@ -12,19 +13,20 @@ export function AuthProvider({ children }) {
 
     // Keep state in sync if other tabs change localStorage
     useEffect(() => {
-        const onStorage = (e) => {
-            if (e.key === "token" || e.key === "email" || e.key === "role") {
-                const token = localStorage.getItem("token");
-                setUser(
-                    token
-                        ? { token, email: localStorage.getItem("email"), role: localStorage.getItem("role") }
-                        : null
-                );
+        const interceptor = axios.interceptors.response.use(
+            response => response,
+            error => {
+                if (error.response?.status === 401) {
+                    localStorage.removeItem("token");
+                    setUser(null);
+                    window.location.href = "/login";
+                }
+                return Promise.reject(error);
             }
-        };
-        window.addEventListener("storage", onStorage);
-        return () => window.removeEventListener("storage", onStorage);
+        );
+        return () => axios.interceptors.response.eject(interceptor);
     }, []);
+
 
     const login = ({ token, email, role }) => {
         localStorage.setItem("token", token);
