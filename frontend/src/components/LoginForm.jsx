@@ -1,7 +1,12 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../auth/AuthProvider";
 
 export default function LoginForm() {
+    const navigate = useNavigate();
+    const { login } = useContext(AuthContext);
+
     const [credentials, setCredentials] = useState({
         email: "",
         password: ""
@@ -22,13 +27,12 @@ export default function LoginForm() {
             const response = await axios.post("http://localhost:8080/api/auth/login", credentials);
             const { token, email, role } = response.data;
 
-            localStorage.setItem("token", token);
-            localStorage.setItem("email", email);
-            localStorage.setItem("role", role);
+            login({ token, email, role });
+            navigate("/");
 
             setMessage(`Logged in as ${email} (${role})`);
         } catch (err) {
-            setError(err?.response?.data || "Login failed. Please check your email and password.");
+            setError(err?.response?.data?.message || err?.response?.data || "Login failed. Please check your email and password.");
         }
     };
 

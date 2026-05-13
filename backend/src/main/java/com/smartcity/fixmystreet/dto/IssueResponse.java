@@ -15,6 +15,7 @@ public class IssueResponse {
     private String address;
     private String authorEmail;
     private Long categoryId;
+    private String photoUrl;
 
     public IssueResponse() {}
 
@@ -24,6 +25,7 @@ public class IssueResponse {
         response.setDescription(issue.getDescription());
         response.setStatus(issue.getStatus() != null ? issue.getStatus().name() : null);
         response.setCreatedAt(issue.getCreatedAt());
+        response.setPhotoUrl(issue.getPhotoUrl());
 
         Location location = issue.getLocation();
         if (location != null) {
@@ -36,8 +38,8 @@ public class IssueResponse {
             response.setAuthorEmail(issue.getAuthor().getEmail());
         }
 
-        if (issue.getType() != null) {
-            response.setCategoryId(issue.getType().getId());
+        if (issue.getIssueCategory() != null) {
+            response.setCategoryId(issue.getIssueCategory().getId());
         }
 
         return response;
@@ -113,5 +115,12 @@ public class IssueResponse {
 
     public void setCategoryId(Long categoryId) {
         this.categoryId = categoryId;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
+    }
+    public String getPhotoUrl() {
+        return photoUrl;
     }
 }

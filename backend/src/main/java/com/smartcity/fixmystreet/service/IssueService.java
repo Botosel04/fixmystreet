@@ -8,6 +8,7 @@ import com.smartcity.fixmystreet.model.*;
 import com.smartcity.fixmystreet.repository.CommentRepository;
 import com.smartcity.fixmystreet.repository.ReportedIssueRepository;
 import com.smartcity.fixmystreet.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.smartcity.fixmystreet.repository.IssueCategoryRepository;
@@ -104,6 +105,10 @@ public class IssueService {
             newIssue.setAuthor(null);
         }
 
+        if(incomingData.getPhotoUrl() != null && !incomingData.getPhotoUrl().isEmpty()){
+            newIssue.setPhotoUrl(incomingData.getPhotoUrl());
+        }
+
         return reportedIssueRepository.save(newIssue);
     }
 
@@ -141,7 +146,10 @@ public class IssueService {
     }
 
     public List<ReportedIssue> getNearbyTasks(Long issueId, Double lat, Double lon, Double radiusKm){
-        return reportedIssueRepository.findNearbyBacklogIssues(issueId, lat, lon, radiusKm);
+        ReportedIssue issue = reportedIssueRepository.findById(issueId)
+                .orElseThrow(() -> new RuntimeException("Issue not found"));
+        Long categoryId = issue.getIssueCategory().getId();
+        return reportedIssueRepository.findNearbyBacklogIssues(categoryId, lat, lon, radiusKm);
     }
 
     public AnalyticsResponse getImpactAnalysis(String userEmail){

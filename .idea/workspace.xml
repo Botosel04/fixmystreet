@@ -5,20 +5,65 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2b035349-7de4-41cc-872e-4022a1052522" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/dto/AnalyticsResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/auth/AuthProvider.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/HomePage.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/IssuePage.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/MapComponent.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/Profile.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/RegisterForm.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.~lock.Deliverable.docx#" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/controller/ReportController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/controller/ReportController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/controller/WorkerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/controller/WorkerController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/dto/IssueResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/dto/IssueResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/dto/ReportRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/dto/ReportRequest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/model/ReportedIssue.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/model/ReportedIssue.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/model/Worker.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/model/Worker.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/repository/ReportedIssueRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/repository/ReportedIssueRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/service/IssueService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/smartcity/fixmystreet/service/IssueService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/test/java/com/smartcity/fixmystreet/IssueServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/test/java/com/smartcity/fixmystreet/IssueServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/App.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/LoginForm.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/LoginForm.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/NavBar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/NavBar.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/ReportForm.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/ReportForm.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CopilotChats">
+    <option name="panelChat">
+      <chat>
+        <option name="activeSessionId" value="e12625a7-2744-41b7-807e-0537f44818a9" />
+        <option name="sessions">
+          <session>
+            <option name="chatType" value="PANEL" />
+            <option name="id" value="e12625a7-2744-41b7-807e-0537f44818a9" />
+            <option name="modeId" value="Ask" />
+            <option name="modelType" value="builtin_family" />
+            <option name="modelValue" value="gpt-5.2-codex" />
+            <option name="status" value="Completed" />
+            <option name="targetType" value="LOCAL" />
+          </session>
+          <session>
+            <option name="chatType" value="PANEL" />
+            <option name="id" value="4d59e372-94c7-4f02-b0a0-e069c94e733a" />
+            <option name="modeId" value="Agent" />
+            <option name="modelType" value="builtin_family" />
+            <option name="modelValue" value="auto" />
+            <option name="targetType" value="LOCAL" />
+          </session>
+          <session>
+            <option name="chatType" value="PANEL" />
+            <option name="id" value="5df70469-f7d0-448e-9bfd-8a84afbe8782" />
+            <option name="modeId" value="Agent" />
+            <option name="modelType" value="builtin_family" />
+            <option name="modelValue" value="auto" />
+            <option name="targetType" value="LOCAL" />
+          </session>
+        </option>
+        <option name="type" value="PANEL" />
+      </chat>
+    </option>
   </component>
   <component name="CopilotPersistence">
     <persistenceIdMap>
@@ -30,7 +75,7 @@
     <option name="chatModeId" value="Agent" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="45" />
+    <option name="cachedIndexableFilesCount" value="53" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -93,7 +138,7 @@
     &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;,
     &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
@@ -155,7 +200,11 @@
       <workItem from="1776350931470" duration="2724000" />
       <workItem from="1776924412666" duration="215000" />
       <workItem from="1777305824820" duration="10515000" />
-      <workItem from="1777529616324" duration="4306000" />
+      <workItem from="1777529616324" duration="5490000" />
+      <workItem from="1778330955024" duration="6907000" />
+      <workItem from="1778399543480" duration="8689000" />
+      <workItem from="1778421184106" duration="2948000" />
+      <workItem from="1778514444429" duration="2909000" />
     </task>
     <servers />
   </component>

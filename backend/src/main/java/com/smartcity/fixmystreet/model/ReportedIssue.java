@@ -89,7 +89,7 @@ public class ReportedIssue {
     public void setPhotoUrl(String photoUrl) {
         this.photoUrl = photoUrl;
     }
-    public IssueCategory getType() {
+    public IssueCategory getIssueCategory() {
         return this.issueCategory;
     }
     public void setIssueCategory(IssueCategory issueCategory) {

@@ -6,6 +6,7 @@ public class ReportRequest {
     private Double longitude;
     private Double latitude;
     private String description;
+    private String photoUrl;
 
     public ReportRequest(){
 
@@ -25,4 +26,7 @@ public class ReportRequest {
 
     public String getAddress() { return address; }
     public void setAddress(String address) { this.address = address; }
+
+    public String getPhotoUrl() { return photoUrl; }
+    public void setPhotoUrl(String photoUrl) { this.photoUrl = photoUrl; }
 }
