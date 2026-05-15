@@ -17,16 +17,23 @@ public class IssueResponse {
     private Long categoryId;
     private String photoUrl;
     private String assignedWorkerEmail;
+    private boolean isRated;
+
 
     public IssueResponse() {}
 
     public static IssueResponse fromEntity(ReportedIssue issue) {
+        return fromEntity(issue, false);
+    }
+
+    public static IssueResponse fromEntity(ReportedIssue issue, boolean isRated) {
         IssueResponse response = new IssueResponse();
         response.setId(issue.getId());
         response.setDescription(issue.getDescription());
         response.setStatus(issue.getStatus() != null ? issue.getStatus().name() : null);
         response.setCreatedAt(issue.getCreatedAt());
         response.setPhotoUrl(issue.getPhotoUrl());
+        response.setRated(isRated);
         if (issue.getAssignedWorker() != null) {
             response.setAssignedWorkerEmail(issue.getAssignedWorker().getEmail());
         }
@@ -124,4 +131,7 @@ public class IssueResponse {
     public String getAssignedWorkerEmail() {
         return assignedWorkerEmail;
     }
+
+    public boolean isRated() { return isRated; }
+    public void setRated(boolean rated) { isRated = rated; }
 }

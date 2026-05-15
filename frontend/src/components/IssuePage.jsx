@@ -48,9 +48,20 @@ export default function IssuePage() {
     const [actionLoading, setActionLoading] = useState(false);
     const [commentError, setCommentError] = useState("");
 
+    const [ratingStars, setRatingStars] = useState(0);
+    const [hoverStars, setHoverStars] = useState(0);
+    const [ratingSubmitted, setRatingSubmitted] = useState(false);
+    const [feedbackText, setFeedbackText] = useState("");
+
     const fetchIssue = () => {
         axios.get(`${API}/api/issues/${id}`)
-            .then(res => setIssue(res.data))
+            .then(res => {
+                setIssue(res.data);
+
+                if (res.data.rated === true) {
+                    setRatingSubmitted(true);
+                }
+            })
             .catch(() => setError("Issue not found or failed to load."))
             .finally(() => setLoadingIssue(false));
     };
@@ -62,11 +73,26 @@ export default function IssuePage() {
             .finally(() => setLoadingComments(false));
     }, [id]);
 
+    const handleRatingSubmit = async() => {
+        if(ratingStars == 0) return;
+        const token = localStorage.getItem("token");
+        try{
+            const feedbackParam = feedbackText.trim() ? `&feedback=${encodeURIComponent(feedbackText)}` : "";
+            await axios.post(`${API}/api/issues/${id}/rate?stars=${ratingStars}`, {}, {
+                headers: {Authorization: `Bearer ${token}`}
+            });
+            setRatingSubmitted(true);
+            alert("Thank you for your feedback!");
+        }catch(err){
+            alert(err?.response?.data || "Failed to submit rating.");
+        }
+    };
+
     const handleAddComment = async () => {
         if (!commentText.trim()) return;
         setSubmitting(true);
         setCommentError("");
-        const token = localStorage.getItem("jwt_token") || localStorage.getItem("token");
+        const token =localStorage.getItem("token");
         try {
             const res = await axios.post(
                 `${API}/api/issues/${id}/comments`,
@@ -84,7 +110,7 @@ export default function IssuePage() {
 
     const handleWorkerAction = async (actionPath) => {
         setActionLoading(true);
-        const token = localStorage.getItem("jwt_token") || localStorage.getItem("token");
+        const token =  localStorage.getItem("token");
         try {
             await axios.patch(`${API}/api/worker/issues/${id}/${actionPath}`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
@@ -257,6 +283,78 @@ export default function IssuePage() {
                 </div>
             </div>
 
+            {/*  Citizen Rating Section */}
+            {issue.status === "FINISHED" && !isWorker && !ratingSubmitted && (
+                <div style={{ background: "linear-gradient(to right, #F0FDF4, #ECFDF5)", border: "1px solid #A7F3D0", borderRadius: 16, padding: "32px", marginBottom: 32, textAlign: "center", boxShadow: "0 4px 6px -1px rgba(16, 185, 129, 0.1)" }}>
+                    <div style={{ fontSize: 40, marginBottom: 12 }}>🎉</div>
+                    <h3 style={{ margin: "0 0 8px", fontSize: 20, fontWeight: 800, color: "#065F46" }}>This issue has been resolved!</h3>
+                    <p style={{ margin: "0 0 24px", color: "#047857", fontSize: 15 }}>How satisfied are you with the city's work on this task?</p>
+
+                    <div style={{ display: "flex", justifyContent: "center", gap: 8, marginBottom: 24 }}>
+                        {[1, 2, 3, 4, 5].map(star => (
+                            <button
+                                key={star}
+                                onClick={() => setRatingStars(star)}
+                                onMouseEnter={() => setHoverStars(star)}
+                                onMouseLeave={() => setHoverStars(0)}
+                                style={{
+                                    background: "none", border: "none", cursor: "pointer",
+                                    fontSize: 36, padding: 0, lineHeight: 1,
+                                    color: (hoverStars || ratingStars) >= star ? "#F59E0B" : "#D1D5DB",
+                                    transition: "color 0.2s, transform 0.1s"
+                                }}
+                                onMouseDown={e => e.currentTarget.style.transform = "scale(0.9)"}
+                                onMouseUp={e => e.currentTarget.style.transform = "scale(1)"}
+                            >
+                                ★
+                            </button>
+                        ))}
+                    </div>
+                    <div style={{ marginBottom: 24, textAlign: "left" }}>
+                        <label style={{ display: "block", fontSize: 13, fontWeight: 700, color: "#065F46", marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                            Additional Feedback <span style={{ color: "#047857", fontWeight: 400, textTransform: "none" }}>(Optional)</span>
+                        </label>
+                        <textarea
+                            value={feedbackText}
+                            onChange={(e) => setFeedbackText(e.target.value)}
+                            placeholder="Tell us what the city did well or how they can improve..."
+                            rows={3}
+                            style={{
+                                width: "100%", borderRadius: 10, border: "1px solid #A7F3D0", padding: "14px",
+                                fontSize: 14, fontFamily: "inherit", outline: "none", resize: "vertical",
+                                boxSizing: "border-box", transition: "border-color 0.2s, box-shadow 0.2s"
+                            }}
+                            onFocus={e => {
+                                e.target.style.borderColor = "#10B981";
+                                e.target.style.boxShadow = "0 0 0 3px rgba(16, 185, 129, 0.1)";
+                            }}
+                            onBlur={e => {
+                                e.target.style.borderColor = "#A7F3D0";
+                                e.target.style.boxShadow = "none";
+                            }}
+                        />
+                    </div>
+                    <button
+                        onClick={handleRatingSubmit}
+                        disabled={ratingStars === 0}
+                        style={{
+                            background: ratingStars > 0 ? "#10B981" : "#9CA3AF",
+                            color: "#fff", border: "none", borderRadius: 8, padding: "12px 32px",
+                            fontSize: 15, fontWeight: 700, cursor: ratingStars > 0 ? "pointer" : "not-allowed",
+                            transition: "background 0.2s", boxShadow: ratingStars > 0 ? "0 4px 6px rgba(16, 185, 129, 0.2)" : "none"
+                        }}
+                    >
+                        Submit Feedback
+                    </button>
+                </div>
+            )}
+
+            {/* If they just submitted the rating, show a thank you message */}
+            {ratingSubmitted && (
+                <div style={{ background: "#F0FDF4", border: "1px solid #A7F3D0", borderRadius: 16, padding: "24px", marginBottom: 32, textAlign: "center" }}>
+                    <h3 style={{ margin: 0, color: "#065F46" }}>⭐ Thank you for your feedback!</h3>
+                </div>
+            )}
             {/* Comments Section */}
             <div style={{ background: "#fff", border: "1px solid #E2E8F0", borderRadius: 16, padding: "32px", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
                 <h3 style={{ margin: "0 0 24px", fontSize: 18, fontWeight: 800, color: "#0F172A" }}>

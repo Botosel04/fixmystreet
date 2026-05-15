@@ -1,17 +1,11 @@
 package com.smartcity.fixmystreet.service;
 
-import com.smartcity.fixmystreet.dto.AnalyticsResponse;
-import com.smartcity.fixmystreet.dto.CommentRequest;
-import com.smartcity.fixmystreet.dto.CommentResponse;
-import com.smartcity.fixmystreet.dto.ReportRequest;
+import com.smartcity.fixmystreet.dto.*;
 import com.smartcity.fixmystreet.model.*;
-import com.smartcity.fixmystreet.repository.CommentRepository;
-import com.smartcity.fixmystreet.repository.ReportedIssueRepository;
-import com.smartcity.fixmystreet.repository.UserRepository;
+import com.smartcity.fixmystreet.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.smartcity.fixmystreet.repository.IssueCategoryRepository;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -26,16 +20,24 @@ public class IssueService {
     private final IssueCategoryRepository categoryRepository;
     private final CommentRepository commentRepository;
     private final EmailService emailService;
+    private final ResolutionRatingRepository resolutionRatingRepository;
 
     @Autowired
-    public IssueService(ReportedIssueRepository reportedIssueRepository, UserRepository userRepository, IssueCategoryRepository categoryRepository, CommentRepository commentRepository, EmailService emailService) {
+    public IssueService(ReportedIssueRepository reportedIssueRepository, UserRepository userRepository, IssueCategoryRepository categoryRepository, CommentRepository commentRepository, EmailService emailService, ResolutionRatingRepository resolutionRatingRepository) {
         this.reportedIssueRepository = reportedIssueRepository;
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
         this.commentRepository = commentRepository;
         this.emailService = emailService;
+        this.resolutionRatingRepository = resolutionRatingRepository;
     }
 
+    public IssueResponse getIssueDetails(Long id) {
+        ReportedIssue issue = reportedIssueRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Issue not found"));
+        boolean isRated = resolutionRatingRepository.findByReportedIssue(issue).isPresent();
+        return IssueResponse.fromEntity(issue, isRated);
+    }
     private ReportedIssue getIssueAndVerifyOwnership(Long issueId, String loggedInEmail){
         ReportedIssue foundIssue = reportedIssueRepository.findById(issueId)
                 .orElseThrow(() -> new RuntimeException("Issue not found with id: " + issueId));
@@ -153,7 +155,6 @@ public class IssueService {
         }).collect(Collectors.toList());
     }
 
-
     public AnalyticsResponse getImpactAnalysis(String userEmail){
         List<ReportedIssue> userIssues = reportedIssueRepository.findByAuthorEmail(userEmail);
         long total = userIssues.size();
@@ -201,7 +202,25 @@ public class IssueService {
         );
     }
 
+    public void rateIssueResolution(Long issueId, int stars, String feedback) {
+        ReportedIssue issue = reportedIssueRepository.findById(issueId)
+                .orElseThrow(() -> new RuntimeException("Issue not found with id: " + issueId));
+        if (!issue.getStatus().name().equals("FINISHED")) {
+            throw new RuntimeException("Only finished issues can be rated");
+        }
+        if (stars < 1 || stars > 5) {
+            throw new IllegalArgumentException("Stars rating must be between 1 and 5");
+        }
+        if(resolutionRatingRepository.findByReportedIssue(issue).isPresent()){
+            throw new RuntimeException("This issue has already been rated");
+        }
 
+        ResolutionRating rating = new ResolutionRating();
+        rating.setReportedIssue(issue);
+        rating.setStars(stars);
+        rating.setFeedbackText(feedback);
 
+        resolutionRatingRepository.save(rating);
+    }
 
 }

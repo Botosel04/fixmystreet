@@ -65,7 +65,21 @@ public class ReportController {
 
     @GetMapping("/{id}")
     public ResponseEntity<IssueResponse> getSingleIssue(@PathVariable Long id){
-        ReportedIssue issue = issueService.getIssueById(id);
-        return ResponseEntity.ok(IssueResponse.fromEntity(issue));
+        IssueResponse response = issueService.getIssueDetails(id);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{id}/rate")
+    public ResponseEntity<?> rateIssueResolution(
+            @PathVariable Long id,
+            @RequestParam int stars,
+            @RequestParam(required = false) String feedback){
+        try{
+            issueService.rateIssueResolution(id, stars, feedback);
+            return ResponseEntity.ok("Rating submitted successfully");
+        }catch (RuntimeException ex){
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
+
     }
 }
