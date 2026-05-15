@@ -7,11 +7,18 @@ import HomePage from './components/HomePage';
 import NavBar from './components/NavBar';
 import { AuthProvider } from './auth/AuthProvider';
 import IssuePage from './components/IssuePage.jsx';
-
-
-
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import WorkerDashboard from './components/WorkerDashboard.jsx';
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useState } from "react";
+
+function HomeRedirect() {
+    const role = localStorage.getItem('role');
+
+    if (role === 'CITY_WORKER') {
+        return <Navigate to="/worker-dashboard" replace />;
+    }
+    return <HomePage />;
+}
 
 function App() {
     const [mapLocation, setMapLocation] = useState({
@@ -25,8 +32,8 @@ function App() {
                 <NavBar />
                 <div>
                     <Routes>
-                        <Route path="/" element={<HomePage />} />
-
+                        <Route path="/" element={<HomeRedirect />} />
+                        <Route path="/worker-dashboard" element={<WorkerDashboard />} />
                         <Route path="/report" element={
                             <div style={{ height: "calc(100vh - 80px)", display: "flex", gap: "0" }}>
                                 <div style={{ flex: "0 0 35%", overflowY: "auto", padding: "20px", backgroundColor: "#f8f9fa" }}>

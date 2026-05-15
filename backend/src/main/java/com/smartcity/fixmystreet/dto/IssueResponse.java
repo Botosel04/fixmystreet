@@ -16,6 +16,7 @@ public class IssueResponse {
     private String authorEmail;
     private Long categoryId;
     private String photoUrl;
+    private String assignedWorkerEmail;
 
     public IssueResponse() {}
 
@@ -26,7 +27,9 @@ public class IssueResponse {
         response.setStatus(issue.getStatus() != null ? issue.getStatus().name() : null);
         response.setCreatedAt(issue.getCreatedAt());
         response.setPhotoUrl(issue.getPhotoUrl());
-
+        if (issue.getAssignedWorker() != null) {
+            response.setAssignedWorkerEmail(issue.getAssignedWorker().getEmail());
+        }
         Location location = issue.getLocation();
         if (location != null) {
             response.setLongitude(location.getX());
@@ -48,7 +51,6 @@ public class IssueResponse {
     public Long getId() {
         return id;
     }
-
     public void setId(Long id) {
         this.id = id;
     }
@@ -56,7 +58,6 @@ public class IssueResponse {
     public String getDescription() {
         return description;
     }
-
     public void setDescription(String description) {
         this.description = description;
     }
@@ -64,7 +65,6 @@ public class IssueResponse {
     public String getStatus() {
         return status;
     }
-
     public void setStatus(String status) {
         this.status = status;
     }
@@ -72,7 +72,6 @@ public class IssueResponse {
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
-
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
@@ -80,7 +79,6 @@ public class IssueResponse {
     public Double getLatitude() {
         return latitude;
     }
-
     public void setLatitude(Double latitude) {
         this.latitude = latitude;
     }
@@ -88,7 +86,6 @@ public class IssueResponse {
     public Double getLongitude() {
         return longitude;
     }
-
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
     }
@@ -96,7 +93,6 @@ public class IssueResponse {
     public String getAddress() {
         return address;
     }
-
     public void setAddress(String address) {
         this.address = address;
     }
@@ -104,7 +100,6 @@ public class IssueResponse {
     public String getAuthorEmail() {
         return authorEmail;
     }
-
     public void setAuthorEmail(String authorEmail) {
         this.authorEmail = authorEmail;
     }
@@ -112,7 +107,6 @@ public class IssueResponse {
     public Long getCategoryId() {
         return categoryId;
     }
-
     public void setCategoryId(Long categoryId) {
         this.categoryId = categoryId;
     }
@@ -122,5 +116,12 @@ public class IssueResponse {
     }
     public String getPhotoUrl() {
         return photoUrl;
+    }
+
+    public void setAssignedWorkerEmail(String assignedWorkerEmail) {
+        this.assignedWorkerEmail = assignedWorkerEmail;
+    }
+    public String getAssignedWorkerEmail() {
+        return assignedWorkerEmail;
     }
 }

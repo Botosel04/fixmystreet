@@ -13,6 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.smartcity.fixmystreet.repository.IssueCategoryRepository;
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,13 +25,15 @@ public class IssueService {
     private  final UserRepository userRepository;
     private final IssueCategoryRepository categoryRepository;
     private final CommentRepository commentRepository;
+    private final EmailService emailService;
 
     @Autowired
-    public IssueService(ReportedIssueRepository reportedIssueRepository, UserRepository userRepository, IssueCategoryRepository categoryRepository, CommentRepository commentRepository) {
+    public IssueService(ReportedIssueRepository reportedIssueRepository, UserRepository userRepository, IssueCategoryRepository categoryRepository, CommentRepository commentRepository, EmailService emailService) {
         this.reportedIssueRepository = reportedIssueRepository;
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
         this.commentRepository = commentRepository;
+        this.emailService = emailService;
     }
 
     private ReportedIssue getIssueAndVerifyOwnership(Long issueId, String loggedInEmail){
@@ -74,6 +79,9 @@ public class IssueService {
         }
         foundIssue.setStatus(IssueStatus.FINISHED);
         reportedIssueRepository.save(foundIssue);
+
+        String categoryName = foundIssue.getIssueCategory() != null ? foundIssue.getIssueCategory().getName() : "Unknown Category";
+        emailService.sendEmail(foundIssue.getAuthor().getEmail(), foundIssue.getId(), categoryName);
     }
 
     public ReportedIssue createIssue(ReportRequest incomingData, String citizenMail){
@@ -145,12 +153,6 @@ public class IssueService {
         }).collect(Collectors.toList());
     }
 
-    public List<ReportedIssue> getNearbyTasks(Long issueId, Double lat, Double lon, Double radiusKm){
-        ReportedIssue issue = reportedIssueRepository.findById(issueId)
-                .orElseThrow(() -> new RuntimeException("Issue not found"));
-        Long categoryId = issue.getIssueCategory().getId();
-        return reportedIssueRepository.findNearbyBacklogIssues(categoryId, lat, lon, radiusKm);
-    }
 
     public AnalyticsResponse getImpactAnalysis(String userEmail){
         List<ReportedIssue> userIssues = reportedIssueRepository.findByAuthorEmail(userEmail);
@@ -179,6 +181,25 @@ public class IssueService {
                 .orElseThrow(() -> new RuntimeException("Issue not found with id: " + id));
     }
 
+    public List<ReportedIssue> getNearbyBacklogTasks(double lat, double lng, double radiusKm, Long categoryId, String from, String to) {
+
+        Timestamp fromTimestamp = null;
+        Timestamp toTimestamp = null;
+
+        if (from != null && !from.trim().isEmpty()) {
+            LocalDate fromDate = LocalDate.parse(from, DateTimeFormatter.ISO_LOCAL_DATE);
+            fromTimestamp = Timestamp.valueOf(fromDate.atStartOfDay());
+        }
+
+        if (to != null && !to.trim().isEmpty()) {
+            LocalDate toDate = LocalDate.parse(to, DateTimeFormatter.ISO_LOCAL_DATE);
+            toTimestamp = Timestamp.valueOf(toDate.atTime(23, 59, 59));
+        }
+
+        return reportedIssueRepository.findNearbyFilteredBacklog(
+                lat, lng, radiusKm, categoryId, fromTimestamp, toTimestamp
+        );
+    }
 
 
 

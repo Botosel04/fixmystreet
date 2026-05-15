@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("api/worker")
 public class WorkerController {
     private final ReportedIssueRepository repository;
@@ -34,8 +35,15 @@ public class WorkerController {
     }
 
     @GetMapping("/backlog/nearby")
-    public ResponseEntity<List<ReportedIssue>> getNearbyBacklogIssues(@RequestParam Long IssueId, @RequestParam double lat, @RequestParam double lng, @RequestParam double radiusKm){
-        List<ReportedIssue> nearbyIssues = issueService.getNearbyTasks(IssueId, lat, lng, radiusKm);
+    public ResponseEntity<List<ReportedIssue>> getNearbyBacklogIssues(
+            @RequestParam double lat,
+            @RequestParam double lng,
+            @RequestParam double radiusKm,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) String from,
+            @RequestParam(required = false) String to
+    ){
+        List<ReportedIssue> nearbyIssues = issueService.getNearbyBacklogTasks(lat, lng, radiusKm, categoryId, from, to);
         return ResponseEntity.ok(nearbyIssues);
     }
 

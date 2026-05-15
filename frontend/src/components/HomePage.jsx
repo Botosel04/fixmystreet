@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const BADGE_STYLE = {
     BACKLOG:     { bg: "#E8F0FE", color: "#1A56DB" },
@@ -39,79 +39,81 @@ function IssueCard({ issue }) {
     const [imgError, setImgError] = useState(false);
 
     return (
-        <div style={{
-            background: "#fff",
-            border: "1px solid #E5E7EB",
-            borderRadius: 16,
-            overflow: "hidden",
-            display: "flex",
-            flexDirection: "column",
-            transition: "box-shadow 0.2s ease, transform 0.2s ease",
-            cursor: "default",
-        }}
-             onMouseEnter={e => {
-                 e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.10)";
-                 e.currentTarget.style.transform = "translateY(-2px)";
-             }}
-             onMouseLeave={e => {
-                 e.currentTarget.style.boxShadow = "none";
-                 e.currentTarget.style.transform = "translateY(0)";
-             }}
-        >
-            {/* Photo */}
-            {issue.photoUrl && !imgError && (
-                <div style={{ height: 160, overflow: "hidden", background: "#F3F4F6" }}>
-                    <img
-                        src={issue.photoUrl}
-                        alt="Issue photo"
-                        onError={() => setImgError(true)}
-                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                    />
-                </div>
-            )}
+        <Link to={`/issues/${issue.id}`} style={{ textDecoration: "none", color: "inherit" }}>
+            <div style={{
+                background: "#fff",
+                border: "1px solid #E5E7EB",
+                borderRadius: 16,
+                overflow: "hidden",
+                display: "flex",
+                flexDirection: "column",
+                transition: "box-shadow 0.2s ease, transform 0.2s ease",
+                cursor: "default",
+            }}
+                 onMouseEnter={e => {
+                     e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.10)";
+                     e.currentTarget.style.transform = "translateY(-2px)";
+                 }}
+                 onMouseLeave={e => {
+                     e.currentTarget.style.boxShadow = "none";
+                     e.currentTarget.style.transform = "translateY(0)";
+                 }}
+            >
+                {/* Photo */}
+                {issue.photoUrl && !imgError && (
+                    <div style={{ height: 160, overflow: "hidden", background: "#F3F4F6" }}>
+                        <img
+                            src={issue.photoUrl}
+                            alt="Issue photo"
+                            onError={() => setImgError(true)}
+                            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                        />
+                    </div>
+                )}
 
-            <div style={{ padding: "1rem 1.125rem", flex: 1, display: "flex", flexDirection: "column", gap: 10 }}>
-                {/* Top row */}
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <span style={{ fontSize: 12, color: "#9CA3AF", fontFamily: "monospace" }}>
-                        {icon} #{issue.id}
-                    </span>
-                    <span style={{
-                        fontSize: 11, fontWeight: 600, padding: "3px 10px", borderRadius: 20,
-                        background: badge.bg, color: badge.color, letterSpacing: "0.02em",
+                <div style={{ padding: "1rem 1.125rem", flex: 1, display: "flex", flexDirection: "column", gap: 10 }}>
+                    {/* Top row */}
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <span style={{ fontSize: 12, color: "#9CA3AF", fontFamily: "monospace" }}>
+                            {icon} #{issue.id}
+                        </span>
+                        <span style={{
+                            fontSize: 11, fontWeight: 600, padding: "3px 10px", borderRadius: 20,
+                            background: badge.bg, color: badge.color, letterSpacing: "0.02em",
+                        }}>
+                            {BADGE_LABEL[issue.status] || issue.status}
+                        </span>
+                    </div>
+
+                    {/* Description */}
+                    <p style={{
+                        fontSize: 14, margin: 0, lineHeight: 1.55, color: "#111827",
+                        display: "-webkit-box", WebkitLineClamp: 3,
+                        WebkitBoxOrient: "vertical", overflow: "hidden",
                     }}>
-                        {BADGE_LABEL[issue.status] || issue.status}
-                    </span>
-                </div>
+                        {issue.description}
+                    </p>
 
-                {/* Description */}
-                <p style={{
-                    fontSize: 14, margin: 0, lineHeight: 1.55, color: "#111827",
-                    display: "-webkit-box", WebkitLineClamp: 3,
-                    WebkitBoxOrient: "vertical", overflow: "hidden",
-                }}>
-                    {issue.description}
-                </p>
-
-                {/* Meta */}
-                <div style={{
-                    marginTop: "auto", borderTop: "1px solid #F3F4F6",
-                    paddingTop: 10, display: "flex", flexDirection: "column", gap: 4,
-                }}>
-                    <span style={{ fontSize: 12, color: "#6B7280", display: "flex", alignItems: "center", gap: 5 }}>
-                        📍 <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{locationText(issue)}</span>
-                    </span>
-                    <div style={{ display: "flex", justifyContent: "space-between" }}>
-                        <span style={{ fontSize: 12, color: "#6B7280" }}>
-                            🗓 {formatDate(issue.createdAt)}
+                    {/* Meta */}
+                    <div style={{
+                        marginTop: "auto", borderTop: "1px solid #F3F4F6",
+                        paddingTop: 10, display: "flex", flexDirection: "column", gap: 4,
+                    }}>
+                        <span style={{ fontSize: 12, color: "#6B7280", display: "flex", alignItems: "center", gap: 5 }}>
+                            📍 <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{locationText(issue)}</span>
                         </span>
-                        <span style={{ fontSize: 12, color: "#6B7280", maxWidth: 140, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                            {issue.authorEmail ? `👤 ${issue.authorEmail.split("@")[0]}` : "👤 Anonymous"}
-                        </span>
+                        <div style={{ display: "flex", justifyContent: "space-between" }}>
+                            <span style={{ fontSize: 12, color: "#6B7280" }}>
+                                🗓 {formatDate(issue.createdAt)}
+                            </span>
+                            <span style={{ fontSize: 12, color: "#6B7280", maxWidth: 140, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                                {issue.authorEmail ? `👤 ${issue.authorEmail.split("@")[0]}` : "👤 Anonymous"}
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </Link>
     );
 }
 

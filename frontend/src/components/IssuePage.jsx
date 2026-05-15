@@ -12,16 +12,22 @@ const BADGE_STYLE = {
     FINISHED:    { bg: "#F3F4F6", color: "#374151" },
     ON_HOLD:     { bg: "#FEE2E2", color: "#991B1B" },
 };
+
 const BADGE_LABEL = {
     BACKLOG: "Backlog", ASSIGNED: "Assigned",
     IN_PROGRESS: "In progress", FINISHED: "Finished", ON_HOLD: "On hold",
 };
-const CATEGORY_MAP = { 1: "🕳️ Pothole / Road Damage", 2: "🖊️ Graffiti", 3: "🗑️ Illegal Dumping", 4: "💡 Broken Streetlight" };
+
+// Removed emojis for a cleaner, professional title
+const CATEGORY_NAME = { 1: "Pothole / Road Damage", 2: "Graffiti", 3: "Illegal Dumping", 4: "Broken Streetlight" };
 
 function formatDate(iso) {
+    if (!iso) return "Unknown date";
     return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
 }
+
 function formatDateTime(iso) {
+    if (!iso) return "Unknown time";
     return new Date(iso).toLocaleString("en-GB", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
 }
 
@@ -29,22 +35,28 @@ export default function IssuePage() {
     const { id } = useParams();
     const navigate = useNavigate();
     const { user } = useContext(AuthContext);
+    const userRole = user?.role || localStorage.getItem("role");
 
     const [issue, setIssue] = useState(null);
     const [comments, setComments] = useState([]);
     const [loadingIssue, setLoadingIssue] = useState(true);
     const [loadingComments, setLoadingComments] = useState(true);
     const [error, setError] = useState("");
+
     const [commentText, setCommentText] = useState("");
     const [submitting, setSubmitting] = useState(false);
+    const [actionLoading, setActionLoading] = useState(false);
     const [commentError, setCommentError] = useState("");
 
-    useEffect(() => {
+    const fetchIssue = () => {
         axios.get(`${API}/api/issues/${id}`)
             .then(res => setIssue(res.data))
             .catch(() => setError("Issue not found or failed to load."))
             .finally(() => setLoadingIssue(false));
+    };
 
+    useEffect(() => {
+        fetchIssue();
         axios.get(`${API}/api/issues/${id}/comments`)
             .then(res => setComments(res.data || []))
             .finally(() => setLoadingComments(false));
@@ -54,7 +66,7 @@ export default function IssuePage() {
         if (!commentText.trim()) return;
         setSubmitting(true);
         setCommentError("");
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem("jwt_token") || localStorage.getItem("token");
         try {
             const res = await axios.post(
                 `${API}/api/issues/${id}/comments`,
@@ -70,184 +82,267 @@ export default function IssuePage() {
         }
     };
 
-    // ── Loading ──
+    const handleWorkerAction = async (actionPath) => {
+        setActionLoading(true);
+        const token = localStorage.getItem("jwt_token") || localStorage.getItem("token");
+        try {
+            await axios.patch(`${API}/api/worker/issues/${id}/${actionPath}`, {}, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            fetchIssue();
+        } catch (err) {
+            alert(err?.response?.data?.message || `Failed to ${actionPath} task.`);
+        } finally {
+            setActionLoading(false);
+        }
+    };
+
     if (loadingIssue) return (
         <div style={{ minHeight: "60vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <div style={{ textAlign: "center", color: "#6B7280" }}>
-                <div style={{ fontSize: 40, marginBottom: 12 }}>⏳</div>
-                <p>Loading issue…</p>
+            <div style={{ textAlign: "center", color: "#64748B", fontFamily: "Inter, system-ui, sans-serif" }}>
+                <div style={{ fontSize: 40, marginBottom: 12, animation: "pulse 1.5s infinite" }}>⏳</div>
+                <p>Loading ticket details…</p>
             </div>
         </div>
     );
 
-    // ── Error ──
     if (error) return (
-        <div style={{ maxWidth: 640, margin: "80px auto", textAlign: "center", padding: "0 24px" }}>
+        <div style={{ maxWidth: 640, margin: "80px auto", textAlign: "center", padding: "0 24px", fontFamily: "Inter, system-ui, sans-serif" }}>
             <div style={{ fontSize: 48, marginBottom: 16 }}>😕</div>
-            <h2 style={{ color: "#0F172A", marginBottom: 8 }}>Issue not found</h2>
-            <p style={{ color: "#6B7280", marginBottom: 24 }}>{error}</p>
-            <button onClick={() => navigate("/")} style={{
+            <h2 style={{ color: "#0F172A", marginBottom: 8 }}>Ticket Not Found</h2>
+            <p style={{ color: "#64748B", marginBottom: 24 }}>{error}</p>
+            <button onClick={() => navigate(-1)} style={{
                 background: "#3B82F6", color: "#fff", border: "none",
-                borderRadius: 10, padding: "10px 24px", fontSize: 14, fontWeight: 600, cursor: "pointer",
-            }}>← Back to Home</button>
+                borderRadius: 8, padding: "10px 24px", fontSize: 14, fontWeight: 600, cursor: "pointer",
+            }}>← Go Back</button>
         </div>
     );
 
     const badge = BADGE_STYLE[issue.status] || BADGE_STYLE.BACKLOG;
-    const locationText = issue.address
-        ? issue.address
-        : (issue.latitude && issue.longitude)
-            ? `${Number(issue.latitude).toFixed(5)}, ${Number(issue.longitude).toFixed(5)}`
-            : "No location provided";
+    const isWorker = userRole === "CITY_WORKER";
+
+    // Fallback logic for coordinates and maps
+    const lat = issue.latitude || issue.location?.latitude;
+    const lng = issue.longitude || issue.location?.longitude;
+    const osmUrl = `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=18/${lat}/${lng}`;
+
+    const locationDisplay = issue.address ? issue.address
+        : (issue.location && issue.location.address) ? issue.location.address
+            : (lat && lng) ? `${Number(lat).toFixed(5)}, ${Number(lng).toFixed(5)}`
+                : "No location provided";
+
+    const title = CATEGORY_NAME[issue.categoryId] || CATEGORY_NAME[issue.category?.id] || "General Task";
 
     return (
-        <div style={{ maxWidth: 860, margin: "0 auto", padding: "32px 24px 64px", fontFamily: "system-ui, sans-serif" }}>
+        <div style={{ maxWidth: 860, margin: "0 auto", padding: "32px 24px 80px", fontFamily: "'Inter', system-ui, -apple-system, sans-serif" }}>
 
             {/* Back link */}
-            <Link to="/" style={{ fontSize: 13, color: "#6B7280", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 4, marginBottom: 24 }}>
-                ← Back to all issues
-            </Link>
+            <button
+                onClick={() => navigate(-1)}
+                style={{ background: "none", border: "none", padding: 0, fontSize: 14, fontWeight: 500, color: "#64748B", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 6, marginBottom: 24, transition: "color 0.2s" }}
+                onMouseEnter={e => e.currentTarget.style.color = "#0F172A"}
+                onMouseLeave={e => e.currentTarget.style.color = "#64748B"}
+            >
+                ← Back to Dashboard
+            </button>
 
-            {/* ── Header card ── */}
-            <div style={{ background: "#fff", border: "1px solid #E5E7EB", borderRadius: 16, overflow: "hidden", marginBottom: 20 }}>
+            {/* Worker Action Bar */}
+            {isWorker && (
+                <div style={{ background: "linear-gradient(to right, #F8FAFC, #F1F5F9)", border: "1px solid #E2E8F0", borderRadius: 12, padding: "20px 24px", marginBottom: 24, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16, boxShadow: "0 1px 2px rgba(0,0,0,0.05)" }}>
+                    <div>
+                        <h4 style={{ margin: "0 0 4px", color: "#0F172A", fontSize: 16, fontWeight: 700 }}>Staff Controls</h4>
+                        <p style={{ margin: 0, fontSize: 13, color: "#64748B" }}>Update the status of this ticket to keep citizens informed.</p>
+                    </div>
 
-                {/* Photo */}
+                    <div style={{ display: "flex", gap: 12 }}>
+                        {issue.status === "BACKLOG" && (
+                            <button onClick={() => handleWorkerAction("claim")} disabled={actionLoading} style={{ background: "#10B981", color: "#fff", border: "none", padding: "10px 24px", borderRadius: 8, fontWeight: 600, fontSize: 14, cursor: actionLoading ? "wait" : "pointer", boxShadow: "0 2px 4px rgba(16, 185, 129, 0.2)" }}>
+                                {actionLoading ? "Processing..." : "✋ Claim Task"}
+                            </button>
+                        )}
+                        {issue.status === "ASSIGNED" && (
+                            <button onClick={() => handleWorkerAction("start")} disabled={actionLoading} style={{ background: "#F59E0B", color: "#fff", border: "none", padding: "10px 24px", borderRadius: 8, fontWeight: 600, fontSize: 14, cursor: actionLoading ? "wait" : "pointer", boxShadow: "0 2px 4px rgba(245, 158, 11, 0.2)" }}>
+                                {actionLoading ? "Processing..." : "🚀 Start Work"}
+                            </button>
+                        )}
+                        {issue.status === "IN_PROGRESS" && (
+                            <button onClick={() => handleWorkerAction("resolve")} disabled={actionLoading} style={{ background: "#3B82F6", color: "#fff", border: "none", padding: "10px 24px", borderRadius: 8, fontWeight: 600, fontSize: 14, cursor: actionLoading ? "wait" : "pointer", boxShadow: "0 2px 4px rgba(59, 130, 246, 0.2)" }}>
+                                {actionLoading ? "Processing..." : "✅ Mark as Finished"}
+                            </button>
+                        )}
+                        {issue.status === "FINISHED" && (
+                            <span style={{ background: "#E2E8F0", color: "#475569", padding: "10px 24px", borderRadius: 8, fontWeight: 600, fontSize: 14 }}>
+                                🎉 Task Completed
+                            </span>
+                        )}
+                    </div>
+                </div>
+            )}
+
+            {/* Main Issue Card */}
+            <div style={{ background: "#fff", border: "1px solid #E2E8F0", borderRadius: 16, overflow: "hidden", marginBottom: 32, boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)" }}>
+                {/* Photo Header */}
                 {issue.photoUrl && (
-                    <div style={{ maxHeight: 380, overflow: "hidden", background: "#F3F4F6" }}>
-                        <img src={issue.photoUrl} alt="Issue" style={{ width: "100%", objectFit: "cover", display: "block" }} />
+                    <div style={{ maxHeight: 400, overflow: "hidden", background: "#F1F5F9", borderBottom: "1px solid #E2E8F0" }}>
+                        <img src={issue.photoUrl} alt="Issue" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
                     </div>
                 )}
 
-                <div style={{ padding: "24px 28px" }}>
-                    {/* Status + ID row */}
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexWrap: "wrap", gap: 10 }}>
-                        <span style={{ fontSize: 13, color: "#9CA3AF", fontFamily: "monospace" }}>Issue #{issue.id}</span>
+                <div style={{ padding: "32px" }}>
+                    {/* Header Row: Title & Badge */}
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16, marginBottom: 24, flexWrap: "wrap" }}>
+                        <div>
+                            <h1 style={{ margin: "0 0 8px 0", fontSize: 26, fontWeight: 800, color: "#0F172A", lineHeight: 1.2 }}>
+                                {title}
+                            </h1>
+                            <span style={{ fontSize: 14, color: "#64748B", fontWeight: 500, display: "flex", gap: 8, alignItems: "center" }}>
+                                Ticket #{issue.id}
+                                <span style={{ color: "#CBD5E1" }}>|</span>
+                                Reported by {issue.authorEmail ? issue.authorEmail.split("@")[0] : "Anonymous"}
+                            </span>
+                        </div>
                         <span style={{
-                            fontSize: 12, fontWeight: 700, padding: "4px 14px", borderRadius: 20,
-                            background: badge.bg, color: badge.color, letterSpacing: "0.04em",
+                            fontSize: 13, fontWeight: 700, padding: "6px 16px", borderRadius: 20,
+                            background: badge.bg, color: badge.color, letterSpacing: "0.03em",
                         }}>
                             {BADGE_LABEL[issue.status] || issue.status}
                         </span>
                     </div>
 
-                    {/* Description */}
-                    <p style={{ fontSize: 17, lineHeight: 1.65, color: "#111827", margin: "0 0 24px" }}>
-                        {issue.description}
-                    </p>
-
-                    {/* Meta grid */}
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 16 }}>
-                        {[
-                            { icon: "📍", label: "Location", value: locationText },
-                            { icon: "🗓", label: "Reported on", value: formatDate(issue.createdAt) },
-                            { icon: "📂", label: "Category", value: CATEGORY_MAP[issue.categoryId] || `Category ${issue.categoryId}` },
-                            { icon: "👤", label: "Reported by", value: issue.authorEmail ? issue.authorEmail.split("@")[0] : "Anonymous" },
-                        ].map(item => (
-                            <div key={item.label} style={{ background: "#F9FAFB", borderRadius: 10, padding: "12px 14px" }}>
-                                <div style={{ fontSize: 11, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 4 }}>{item.label}</div>
-                                <div style={{ fontSize: 14, color: "#111827", fontWeight: 500, wordBreak: "break-all" }}>
-                                    {item.icon} {item.value}
-                                </div>
-                            </div>
-                        ))}
+                    {/* Description Section */}
+                    <div style={{ marginBottom: 32 }}>
+                        <h3 style={{ margin: "0 0 8px 0", fontSize: 12, fontWeight: 700, color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                            Description
+                        </h3>
+                        <p style={{ margin: 0, fontSize: 16, lineHeight: 1.6, color: "#334155", whiteSpace: "pre-wrap" }}>
+                            {issue.description}
+                        </p>
                     </div>
 
-                    {/* Map link if coordinates */}
-                    {issue.latitude && issue.longitude && (
-                        <a
-                            href={`https://www.openstreetmap.org/?mlat=${issue.latitude}&mlon=${issue.longitude}&zoom=16`}
-                            target="_blank" rel="noreferrer"
-                            style={{
-                                display: "inline-block", marginTop: 16, fontSize: 13,
-                                color: "#3B82F6", textDecoration: "none",
-                            }}
-                        >
-                            🗺 View on map ↗
-                        </a>
-                    )}
+                    {/* Clean Meta Details Grid */}
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 24, borderTop: "1px solid #F1F5F9", paddingTop: 24 }}>
+
+                        {/* Location Data */}
+                        <div>
+                            <h3 style={{ margin: "0 0 8px 0", fontSize: 12, fontWeight: 700, color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.05em" }}>Location</h3>
+                            <div style={{ fontSize: 15, color: "#0F172A", fontWeight: 500, marginBottom: 8, wordBreak: "break-word" }}>
+                                {locationDisplay}
+                            </div>
+                            {(lat && lng) && (
+                                <button
+                                    onClick={() => window.open(osmUrl, "_blank", "noopener,noreferrer")}
+                                    style={{
+                                        background: "#EFF6FF", color: "#2563EB", border: "none",
+                                        padding: "6px 12px", borderRadius: 6, fontSize: 13,
+                                        fontWeight: 600, cursor: "pointer", transition: "background 0.2s",
+                                        display: "inline-flex", alignItems: "center", gap: 6
+                                    }}
+                                    onMouseEnter={e => e.currentTarget.style.background = "#DBEAFE"}
+                                    onMouseLeave={e => e.currentTarget.style.background = "#EFF6FF"}
+                                >
+                                    🗺️ View on Map
+                                </button>
+                            )}
+                        </div>
+
+                        {/* Date Data */}
+                        <div>
+                            <h3 style={{ margin: "0 0 8px 0", fontSize: 12, fontWeight: 700, color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.05em" }}>Reported On</h3>
+                            <div style={{ fontSize: 15, color: "#0F172A", fontWeight: 500 }}>
+                                {formatDate(issue.createdAt)}
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
             </div>
 
-            {/* ── Comments ── */}
-            <div style={{ background: "#fff", border: "1px solid #E5E7EB", borderRadius: 16, padding: "24px 28px" }}>
-                <h3 style={{ margin: "0 0 20px", fontSize: 16, fontWeight: 700, color: "#0F172A" }}>
-                    Comments {!loadingComments && <span style={{ color: "#9CA3AF", fontWeight: 400, fontSize: 14 }}>({comments.length})</span>}
+            {/* Comments Section */}
+            <div style={{ background: "#fff", border: "1px solid #E2E8F0", borderRadius: 16, padding: "32px", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
+                <h3 style={{ margin: "0 0 24px", fontSize: 18, fontWeight: 800, color: "#0F172A" }}>
+                    Comments {!loadingComments && <span style={{ color: "#94A3B8", fontWeight: 500, fontSize: 16 }}>({comments.length})</span>}
                 </h3>
 
-                {/* Comment list */}
-                {loadingComments && <p style={{ color: "#9CA3AF", fontSize: 14 }}>Loading comments…</p>}
+                {loadingComments && <p style={{ color: "#94A3B8", fontSize: 14 }}>Loading comments…</p>}
 
                 {!loadingComments && comments.length === 0 && (
-                    <p style={{ color: "#9CA3AF", fontSize: 14, marginBottom: 24 }}>No comments yet. Be the first to comment.</p>
+                    <div style={{ padding: "32px 0", textAlign: "center", border: "1px dashed #CBD5E1", borderRadius: 12, marginBottom: 24 }}>
+                        <p style={{ color: "#64748B", fontSize: 14, margin: 0 }}>No comments yet. Be the first to update this ticket.</p>
+                    </div>
                 )}
 
-                <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: comments.length ? 24 : 0 }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: comments.length ? 32 : 0 }}>
                     {comments.map(c => {
-                        const isWorker = c.authorRole === "WORKER" || c.authorRole === "ADMIN";
+                        const isCommentWorker = c.authorRole === "CITY_WORKER" || c.authorRole === "ADMIN";
                         return (
                             <div key={c.id} style={{
-                                background: isWorker ? "#EFF6FF" : "#F9FAFB",
-                                border: `1px solid ${isWorker ? "#BFDBFE" : "#E5E7EB"}`,
-                                borderRadius: 12, padding: "12px 16px",
+                                background: isCommentWorker ? "#F8FAFC" : "#fff",
+                                border: `1px solid ${isCommentWorker ? "#CBD5E1" : "#E2E8F0"}`,
+                                borderRadius: 12, padding: "16px 20px",
+                                borderLeft: isCommentWorker ? "4px solid #3B82F6" : "1px solid #E2E8F0"
                             }}>
-                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6, gap: 8, flexWrap: "wrap" }}>
-                                    <span style={{ fontSize: 13, fontWeight: 600, color: "#111827" }}>
-                                        {isWorker ? "🔧 " : "👤 "}
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8, gap: 8, flexWrap: "wrap" }}>
+                                    <span style={{ fontSize: 14, fontWeight: 700, color: "#0F172A", display: "flex", alignItems: "center", gap: 8 }}>
                                         {c.authorEmail.split("@")[0]}
-                                        {isWorker && (
-                                            <span style={{ marginLeft: 6, fontSize: 11, background: "#DBEAFE", color: "#1D4ED8", padding: "1px 7px", borderRadius: 10, fontWeight: 500 }}>
-                                                {c.authorRole}
+                                        {isCommentWorker && (
+                                            <span style={{ fontSize: 11, background: "#DBEAFE", color: "#1D4ED8", padding: "2px 8px", borderRadius: 12, fontWeight: 700, letterSpacing: "0.02em" }}>
+                                                STAFF
                                             </span>
                                         )}
                                     </span>
-                                    <span style={{ fontSize: 11, color: "#9CA3AF" }}>{formatDateTime(c.createdAt)}</span>
+                                    <span style={{ fontSize: 12, color: "#64748B", fontWeight: 500 }}>{formatDateTime(c.createdAt)}</span>
                                 </div>
-                                <p style={{ margin: 0, fontSize: 14, color: "#374151", lineHeight: 1.55 }}>{c.text}</p>
+                                <p style={{ margin: 0, fontSize: 15, color: "#334155", lineHeight: 1.6 }}>{c.text}</p>
                             </div>
                         );
                     })}
                 </div>
 
-                {/* Add comment — only if logged in */}
-                {user ? (
-                    <div style={{ borderTop: comments.length ? "1px solid #F3F4F6" : "none", paddingTop: comments.length ? 20 : 0 }}>
+                {userRole ? (
+                    <div>
                         {commentError && (
-                            <div style={{ background: "#FEF2F2", border: "1px solid #FECACA", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "#991B1B", marginBottom: 12 }}>
+                            <div style={{ background: "#FEF2F2", border: "1px solid #FECACA", borderRadius: 8, padding: "12px 16px", fontSize: 14, color: "#991B1B", marginBottom: 16 }}>
                                 {commentError}
                             </div>
                         )}
                         <textarea
                             value={commentText}
                             onChange={e => setCommentText(e.target.value)}
-                            placeholder="Add a comment…"
-                            rows={3}
+                            placeholder={isWorker ? "Add an official update or note..." : "Add a comment…"}
+                            rows={4}
                             style={{
-                                width: "100%", borderRadius: 10, border: "1px solid #E5E7EB",
-                                padding: "10px 14px", fontSize: 14, resize: "vertical",
+                                width: "100%", borderRadius: 12, border: "1px solid #CBD5E1",
+                                padding: "16px", fontSize: 15, resize: "vertical",
                                 fontFamily: "inherit", outline: "none", boxSizing: "border-box",
-                                transition: "border-color 0.15s",
+                                transition: "border-color 0.2s, box-shadow 0.2s",
                             }}
-                            onFocus={e => e.target.style.borderColor = "#3B82F6"}
-                            onBlur={e => e.target.style.borderColor = "#E5E7EB"}
+                            onFocus={e => {
+                                e.target.style.borderColor = "#3B82F6";
+                                e.target.style.boxShadow = "0 0 0 3px rgba(59, 130, 246, 0.1)";
+                            }}
+                            onBlur={e => {
+                                e.target.style.borderColor = "#CBD5E1";
+                                e.target.style.boxShadow = "none";
+                            }}
                         />
-                        <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 10 }}>
+                        <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 12 }}>
                             <button
                                 onClick={handleAddComment}
                                 disabled={submitting || !commentText.trim()}
                                 style={{
-                                    background: submitting || !commentText.trim() ? "#E5E7EB" : "#3B82F6",
-                                    color: submitting || !commentText.trim() ? "#9CA3AF" : "#fff",
-                                    border: "none", borderRadius: 10, padding: "9px 22px",
+                                    background: submitting || !commentText.trim() ? "#E2E8F0" : "#0F172A",
+                                    color: submitting || !commentText.trim() ? "#94A3B8" : "#fff",
+                                    border: "none", borderRadius: 8, padding: "10px 24px",
                                     fontSize: 14, fontWeight: 600, cursor: submitting || !commentText.trim() ? "default" : "pointer",
-                                    transition: "background 0.15s",
+                                    transition: "background 0.2s",
                                 }}
                             >
-                                {submitting ? "Posting…" : "Post comment"}
+                                {submitting ? "Posting…" : "Post Comment"}
                             </button>
                         </div>
                     </div>
                 ) : (
-                    <div style={{ borderTop: "1px solid #F3F4F6", paddingTop: 20, textAlign: "center", color: "#6B7280", fontSize: 14 }}>
+                    <div style={{ textAlign: "center", color: "#64748B", fontSize: 15, padding: "16px 0" }}>
                         <Link to="/login" style={{ color: "#3B82F6", textDecoration: "none", fontWeight: 600 }}>Log in</Link> to leave a comment.
                     </div>
                 )}
