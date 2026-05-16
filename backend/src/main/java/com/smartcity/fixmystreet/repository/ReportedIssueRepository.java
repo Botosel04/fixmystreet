@@ -35,4 +35,7 @@ public interface ReportedIssueRepository extends JpaRepository<ReportedIssue, Lo
             @Param("fromTimestamp") Timestamp fromTimestamp,
             @Param("toTimestamp") Timestamp toTimestamp
     );
+
+    @Query("SELECT i FROM ReportedIssue i WHERE i.assigned_worker.email = :email AND i.status = 'FINISHED' ORDER BY i.createdAt DESC")
+    List<ReportedIssue> findFinishedTasksByWorkerEmail(@Param("email") String email);
 }

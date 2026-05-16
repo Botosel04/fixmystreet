@@ -35,8 +35,8 @@ public class IssueService {
     public IssueResponse getIssueDetails(Long id) {
         ReportedIssue issue = reportedIssueRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Issue not found"));
-        boolean isRated = resolutionRatingRepository.findByReportedIssue(issue).isPresent();
-        return IssueResponse.fromEntity(issue, isRated);
+        ResolutionRating rating = resolutionRatingRepository.findByReportedIssue(issue).orElse(null);
+        return IssueResponse.fromEntity(issue, rating);
     }
     private ReportedIssue getIssueAndVerifyOwnership(Long issueId, String loggedInEmail){
         ReportedIssue foundIssue = reportedIssueRepository.findById(issueId)
@@ -202,9 +202,13 @@ public class IssueService {
         );
     }
 
-    public void rateIssueResolution(Long issueId, int stars, String feedback) {
+    public void rateIssueResolution(Long issueId, int stars, String feedback, String loggedInEmail) {
         ReportedIssue issue = reportedIssueRepository.findById(issueId)
                 .orElseThrow(() -> new RuntimeException("Issue not found with id: " + issueId));
+
+        if (issue.getAuthor() == null || !issue.getAuthor().getEmail().equals(loggedInEmail)) {
+            throw new RuntimeException("Unauthorized: You can only rate issues that you reported yourself.");
+        }
         if (!issue.getStatus().name().equals("FINISHED")) {
             throw new RuntimeException("Only finished issues can be rated");
         }
@@ -223,4 +227,10 @@ public class IssueService {
         resolutionRatingRepository.save(rating);
     }
 
+    public List<IssueResponse> getWorkerHistory(String workerEmail){
+        return reportedIssueRepository.findFinishedTasksByWorkerEmail(workerEmail)
+                .stream()
+                .map(IssueResponse::fromEntity)
+                .collect(Collectors.toList());
+    }
 }

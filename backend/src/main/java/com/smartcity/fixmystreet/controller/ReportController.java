@@ -75,7 +75,8 @@ public class ReportController {
             @RequestParam int stars,
             @RequestParam(required = false) String feedback){
         try{
-            issueService.rateIssueResolution(id, stars, feedback);
+            String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+            issueService.rateIssueResolution(id, stars, feedback, loggedInEmail);
             return ResponseEntity.ok("Rating submitted successfully");
         }catch (RuntimeException ex){
             return ResponseEntity.badRequest().body(ex.getMessage());

@@ -1,5 +1,6 @@
 package com.smartcity.fixmystreet.controller;
 
+import com.smartcity.fixmystreet.dto.IssueResponse;
 import com.smartcity.fixmystreet.model.IssueStatus;
 import com.smartcity.fixmystreet.model.ReportedIssue;
 import com.smartcity.fixmystreet.repository.ReportedIssueRepository;
@@ -67,4 +68,12 @@ public class WorkerController {
         issueService.resolveIssue(issueId, workerEmail);
         return ResponseEntity.ok("Issue successfully resolved");
     }
+
+    @GetMapping("/history")
+    public ResponseEntity<List<IssueResponse>> getWorkersHistory(){
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        List<IssueResponse> history = issueService.getWorkerHistory(email);
+        return ResponseEntity.ok(history);
+    }
+
 }

@@ -2,6 +2,7 @@ package com.smartcity.fixmystreet.dto;
 
 import com.smartcity.fixmystreet.model.Location;
 import com.smartcity.fixmystreet.model.ReportedIssue;
+import com.smartcity.fixmystreet.model.ResolutionRating;
 
 import java.time.LocalDateTime;
 
@@ -18,22 +19,30 @@ public class IssueResponse {
     private String photoUrl;
     private String assignedWorkerEmail;
     private boolean isRated;
-
+    private Integer stars;
+    private String feedback;
 
     public IssueResponse() {}
 
     public static IssueResponse fromEntity(ReportedIssue issue) {
-        return fromEntity(issue, false);
+        return fromEntity(issue, null);
     }
 
-    public static IssueResponse fromEntity(ReportedIssue issue, boolean isRated) {
+    public static IssueResponse fromEntity(ReportedIssue issue, ResolutionRating rating) {
         IssueResponse response = new IssueResponse();
         response.setId(issue.getId());
         response.setDescription(issue.getDescription());
         response.setStatus(issue.getStatus() != null ? issue.getStatus().name() : null);
         response.setCreatedAt(issue.getCreatedAt());
         response.setPhotoUrl(issue.getPhotoUrl());
-        response.setRated(isRated);
+        if(rating != null) {
+            response.setRated(true);
+            response.setStars(rating.getStars());
+            response.setFeedback(rating.getFeedbackText());
+        }else{
+            response.setRated(false);
+            response.setStars(0);
+        }
         if (issue.getAssignedWorker() != null) {
             response.setAssignedWorkerEmail(issue.getAssignedWorker().getEmail());
         }
@@ -134,4 +143,11 @@ public class IssueResponse {
 
     public boolean isRated() { return isRated; }
     public void setRated(boolean rated) { isRated = rated; }
+
+    public Integer getStars() { return stars; }
+    public void setStars(Integer stars) { this.stars = stars; }
+
+    public String getFeedback() { return feedback; }
+    public void setFeedback(String feedback) { this.feedback = feedback; }
+
 }
