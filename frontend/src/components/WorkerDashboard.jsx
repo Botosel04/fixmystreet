@@ -6,7 +6,7 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-// --- BULLETPROOF VITE FIX (From your MapComponent) ---
+// --- BULLETPROOF VITE FIX ---
 const customIcon = L.icon({
     iconUrl: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNSIgaGVpZ2h0PSI0MSIgdmlld0JveD0iMCAwIDI1IDQxIj48cGF0aCBmaWxsPSIjM0I4N0YzIiBkPSJNMTIuNSAwQzUuNiAwIDAgNS42IDAgMTIuNWMwIDcuNSAxMi41IDI4LjEgMTIuNSAyOC4xczEyLjUtMjAuNiAxMi41LTI4LjFDMjUgNS42IDE5LjQgMCAxMi41IDB6bTAgMTYuN2MtMi4zIDAtNC4yLTEuOS00LjItNC4yYzAtMi4zIDEuOS00LjIgNC4yLTQuMnM0LjIgMS45IDQuMiA0LjJjMCAyLjMtMS45IDQuMi00LjIgNC4yeiIvPjwvc3ZnPg==",
     shadowUrl: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MSIgaGVpZ2h0PSI0MSIgdmlld0JveD0iMCAwIDQxIDQxIj48ZWxsaXBzZSBjeD0iMjAuNSIgY3k9IjM4IiByeD0iMjAuNSIgcnk9IjMiIGZpbGw9IiMwMDAwMDAiIG9wYWNpdHk9IjAuMyIvPjwvc3ZnPg==",
@@ -16,7 +16,6 @@ const customIcon = L.icon({
     shadowAnchor: [12, 41],
     popupAnchor: [1, -34],
 });
-// ----------------------------------------------------
 // --------------------------------------------
 const API = "http://localhost:8080";
 
@@ -59,6 +58,10 @@ function IssueCard({ issue }) {
     const lat = issue.latitude || issue.location?.latitude;
     const lng = issue.longitude || issue.location?.longitude;
     const osmUrl = `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=18/${lat}/${lng}`;
+
+    // Dynamic link text depending on if it's finished or active!
+    const linkText = issue.status === "FINISHED" ? "View Feedback →" : "Manage Task →";
+    const linkColor = issue.status === "FINISHED" ? "#047857" : "#3B82F6"; // Green for finished, blue for active
 
     return (
         <Link to={`/issues/${issue.id}`} style={{ textDecoration: "none", color: "inherit" }}>
@@ -109,7 +112,7 @@ function IssueCard({ issue }) {
                         </div>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                             <span style={{ fontSize: 12, color: "#6B7280" }}>🗓 {formatDate(issue.createdAt)}</span>
-                            <span style={{ fontSize: 12, fontWeight: 600, color: "#3B82F6" }}>Manage Task →</span>
+                            <span style={{ fontSize: 12, fontWeight: 700, color: linkColor }}>{linkText}</span>
                         </div>
                     </div>
                 </div>
@@ -124,11 +127,12 @@ export default function WorkerDashboard() {
     const [filteredBacklog, setFilteredBacklog] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
-    const [activeTab, setActiveTab] = useState("BACKLOG");
 
-    // --- NEW: View Mode State ---
+    // Now supports 3 states: BACKLOG, MY_TASKS, HISTORY
+    const [activeTab, setActiveTab] = useState("BACKLOG");
     const [viewMode, setViewMode] = useState("LIST"); // 'LIST' or 'MAP'
 
+    // Backlog Filters
     const [showFilters, setShowFilters] = useState(false);
     const [lat, setLat] = useState("");
     const [lng, setLng] = useState("");
@@ -138,9 +142,14 @@ export default function WorkerDashboard() {
     const [toDate, setToDate] = useState("");
     const [locationLoading, setLocationLoading] = useState(false);
 
+    // History State
+    const [historyIssues, setHistoryIssues] = useState([]);
+    const [loadingHistory, setLoadingHistory] = useState(false);
+
     const navigate = useNavigate();
     const workerEmail = localStorage.getItem("email");
 
+    // Fetch Backlog and Active Tasks on load
     useEffect(() => {
         const token = localStorage.getItem("token") || localStorage.getItem("jwt_token");
         if (!token) { navigate("/login"); return; }
@@ -150,6 +159,21 @@ export default function WorkerDashboard() {
             .catch(err => setError(err?.response?.data?.message || "Failed to load tasks"))
             .finally(() => setLoading(false));
     }, [navigate]);
+
+    // Fetch History only when the tab is clicked
+    useEffect(() => {
+        if (activeTab === "HISTORY" && historyIssues.length === 0) {
+            setLoadingHistory(true);
+            const token = localStorage.getItem("token") || localStorage.getItem("jwt_token");
+
+            axios.get(`${API}/api/worker/history`, {
+                headers: { Authorization: `Bearer ${token}` }
+            })
+                .then(res => setHistoryIssues(res.data))
+                .catch(err => console.error("Failed to load history", err))
+                .finally(() => setLoadingHistory(false));
+        }
+    }, [activeTab, historyIssues.length]);
 
     const handleGetLocation = () => {
         if (!navigator.geolocation) { alert("Geolocation not supported."); return; }
@@ -187,10 +211,15 @@ export default function WorkerDashboard() {
         setShowFilters(false);
     };
 
+    // --- Array Routing based on Active Tab ---
     const baseBacklog = allIssues.filter(i => i.status === "BACKLOG");
     const displayBacklog = filteredBacklog !== null ? filteredBacklog : baseBacklog;
     const myActiveTasks = allIssues.filter(i => (i.status === "ASSIGNED" || i.status === "IN_PROGRESS") && (i.assignedWorkerEmail === workerEmail || i.assignedWorker?.email === workerEmail));
-    const displayedIssues = activeTab === "BACKLOG" ? displayBacklog : myActiveTasks;
+
+    let displayedIssues = [];
+    if (activeTab === "BACKLOG") displayedIssues = displayBacklog;
+    else if (activeTab === "MY_TASKS") displayedIssues = myActiveTasks;
+    else if (activeTab === "HISTORY") displayedIssues = historyIssues;
 
     // Default map center (Cluj-Napoca)
     const mapCenter = (lat && lng) ? [parseFloat(lat), parseFloat(lng)] : [46.770439, 23.591423];
@@ -204,17 +233,21 @@ export default function WorkerDashboard() {
 
             {/* Navigation Strip */}
             <div style={{ background: "#fff", borderBottom: "1px solid #E5E7EB", padding: "0 24px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 20 }}>
-                <div style={{ display: "flex", gap: 10, padding: "16px 0" }}>
-                    <button onClick={() => setActiveTab("BACKLOG")} style={{ padding: "10px 20px", borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: "pointer", border: "none", background: activeTab === "BACKLOG" ? "#EFF6FF" : "transparent", color: activeTab === "BACKLOG" ? "#1D4ED8" : "#6B7280" }}>
+
+                {/* ── UPDATED: 3 Tabs instead of 2 ── */}
+                <div style={{ display: "flex", gap: 10, padding: "16px 0", flexWrap: "wrap" }}>
+                    <button onClick={() => setActiveTab("BACKLOG")} style={{ padding: "10px 16px", borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: "pointer", border: "none", background: activeTab === "BACKLOG" ? "#EFF6FF" : "transparent", color: activeTab === "BACKLOG" ? "#1D4ED8" : "#6B7280" }}>
                         📋 City Backlog ({displayBacklog.length})
                     </button>
-                    <button onClick={() => setActiveTab("MY_TASKS")} style={{ padding: "10px 20px", borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: "pointer", border: "none", background: activeTab === "MY_TASKS" ? "#ECFDF5" : "transparent", color: activeTab === "MY_TASKS" ? "#047857" : "#6B7280" }}>
+                    <button onClick={() => setActiveTab("MY_TASKS")} style={{ padding: "10px 16px", borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: "pointer", border: "none", background: activeTab === "MY_TASKS" ? "#FEF3C7" : "transparent", color: activeTab === "MY_TASKS" ? "#92400E" : "#6B7280" }}>
                         🛠️ My Active Tasks ({myActiveTasks.length})
+                    </button>
+                    <button onClick={() => setActiveTab("HISTORY")} style={{ padding: "10px 16px", borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: "pointer", border: "none", background: activeTab === "HISTORY" ? "#ECFDF5" : "transparent", color: activeTab === "HISTORY" ? "#047857" : "#6B7280" }}>
+                        ✅ Solved History
                     </button>
                 </div>
 
                 <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-                    {/* ── NEW: Map/List Toggle ── */}
                     <div style={{ display: "flex", background: "#F1F5F9", borderRadius: 8, padding: 4 }}>
                         <button onClick={() => setViewMode("LIST")} style={{ padding: "6px 16px", borderRadius: 6, border: "none", fontSize: 13, fontWeight: 600, cursor: "pointer", background: viewMode === "LIST" ? "#fff" : "transparent", color: viewMode === "LIST" ? "#0F172A" : "#64748B", boxShadow: viewMode === "LIST" ? "0 1px 3px rgba(0,0,0,0.1)" : "none" }}>
                             📋 List
@@ -279,10 +312,10 @@ export default function WorkerDashboard() {
 
             {/* ── Main Content Area ── */}
             <div style={{ maxWidth: 1200, margin: "0 auto", padding: "32px 24px 64px" }}>
-                {loading && <div style={{ color: "#64748B" }}>⏳ Loading tasks...</div>}
+                {(loading || (activeTab === "HISTORY" && loadingHistory)) && <div style={{ color: "#64748B", textAlign: "center", fontSize: 18 }}>⏳ Loading...</div>}
                 {error && <div style={{ background: "#FEF2F2", color: "#991B1B", padding: "12px", borderRadius: 8 }}>⚠️ {error}</div>}
 
-                {!loading && !error && (
+                {!(loading || (activeTab === "HISTORY" && loadingHistory)) && !error && (
                     <>
                         {/* VIEW MODE: MAP */}
                         {viewMode === "MAP" && (
@@ -290,11 +323,15 @@ export default function WorkerDashboard() {
                                 <MapContainer center={mapCenter} zoom={13} style={{ height: "100%", width: "100%" }}>
                                     <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution="&copy; OpenStreetMap contributors" />
 
-                                    {/* Draw pins for every issue that has coordinates */}
+                                    {/* Draw pins for every issue in the currently selected tab */}
                                     {displayedIssues.map((issue) => {
                                         const issueLat = issue.latitude || issue.location?.latitude;
                                         const issueLng = issue.longitude || issue.location?.longitude;
                                         const title = CATEGORY_NAME[issue.categoryId] || CATEGORY_NAME[issue.category?.id] || "Task";
+
+                                        // Dynamic link text for the map popup too!
+                                        const popupBtnText = issue.status === "FINISHED" ? "View Feedback" : "Manage Task";
+                                        const popupBtnColor = issue.status === "FINISHED" ? "#047857" : "#3B82F6";
 
                                         if (!issueLat || !issueLng) return null; // Skip issues with no location
 
@@ -303,12 +340,12 @@ export default function WorkerDashboard() {
                                                 <Popup>
                                                     <div style={{ fontFamily: "system-ui", minWidth: "150px" }}>
                                                         <h4 style={{ margin: "0 0 5px", fontSize: "14px" }}>{title}</h4>
-                                                        <span style={{ fontSize: "11px", padding: "3px 8px", borderRadius: "12px", background: "#EFF6FF", color: "#1D4ED8" }}>
+                                                        <span style={{ fontSize: "11px", padding: "3px 8px", borderRadius: "12px", background: BADGE_STYLE[issue.status]?.bg || "#EFF6FF", color: BADGE_STYLE[issue.status]?.color || "#1D4ED8" }}>
                                                             {BADGE_LABEL[issue.status]}
                                                         </span>
                                                         <p style={{ margin: "10px 0", fontSize: "12px", color: "#475569" }}>{formatDate(issue.createdAt)}</p>
-                                                        <Link to={`/issues/${issue.id}`} style={{ display: "block", textAlign: "center", background: "#3B82F6", color: "#fff", textDecoration: "none", padding: "6px", borderRadius: "6px", fontSize: "12px", fontWeight: "bold" }}>
-                                                            Manage Task
+                                                        <Link to={`/issues/${issue.id}`} style={{ display: "block", textAlign: "center", background: popupBtnColor, color: "#fff", textDecoration: "none", padding: "6px", borderRadius: "6px", fontSize: "12px", fontWeight: "bold" }}>
+                                                            {popupBtnText}
                                                         </Link>
                                                     </div>
                                                 </Popup>
@@ -323,8 +360,10 @@ export default function WorkerDashboard() {
                         {viewMode === "LIST" && (
                             displayedIssues.length === 0 ? (
                                 <div style={{ textAlign: "center", padding: "60px 20px", color: "#64748B", background: "#fff", borderRadius: 12, border: "1px dashed #CBD5E1" }}>
-                                    <div style={{ fontSize: 40, marginBottom: 10 }}>🔍</div>
-                                    <p style={{ margin: 0, fontWeight: 500 }}>No tasks found for your current criteria.</p>
+                                    <div style={{ fontSize: 40, marginBottom: 10 }}>{activeTab === "HISTORY" ? "🏆" : "🔍"}</div>
+                                    <p style={{ margin: 0, fontWeight: 500 }}>
+                                        {activeTab === "HISTORY" ? "You haven't resolved any tasks yet." : "No tasks found for your current criteria."}
+                                    </p>
                                 </div>
                             ) : (
                                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 16 }}>

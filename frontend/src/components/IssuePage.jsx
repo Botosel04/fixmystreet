@@ -36,6 +36,7 @@ export default function IssuePage() {
     const navigate = useNavigate();
     const { user } = useContext(AuthContext);
     const userRole = user?.role || localStorage.getItem("role");
+    const currentUserEmail = user?.email || localStorage.getItem("email");
 
     const [issue, setIssue] = useState(null);
     const [comments, setComments] = useState([]);
@@ -78,7 +79,7 @@ export default function IssuePage() {
         const token = localStorage.getItem("token");
         try{
             const feedbackParam = feedbackText.trim() ? `&feedback=${encodeURIComponent(feedbackText)}` : "";
-            await axios.post(`${API}/api/issues/${id}/rate?stars=${ratingStars}`, {}, {
+            await axios.post(`${API}/api/issues/${id}/rate?stars=${ratingStars}${feedbackParam}`, {}, {
                 headers: {Authorization: `Bearer ${token}`}
             });
             setRatingSubmitted(true);
@@ -283,8 +284,39 @@ export default function IssuePage() {
                 </div>
             </div>
 
+            {/* ── NEW: Display Existing Feedback (Visible to Workers AND Citizens) ── */}
+            {issue.status === "FINISHED" && issue.stars > 0 && (
+                <div style={{ background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: 16, padding: "28px", marginBottom: 32, boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexWrap: "wrap", gap: 12 }}>
+                        <h3 style={{ margin: 0, fontSize: 13, fontWeight: 700, color: "#64748B", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                            Citizen Feedback
+                        </h3>
+                        {/* Draw the gold stars dynamically based on the backend data */}
+                        <div style={{ display: "flex", gap: 4 }}>
+                            {[1, 2, 3, 4, 5].map(star => (
+                                <span key={star} style={{ fontSize: 22, color: star <= issue.stars ? "#F59E0B" : "#E2E8F0", lineHeight: 1 }}>
+                                    ★
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Only show the text box if the citizen actually wrote something */}
+                    {issue.feedback && issue.feedback.trim() !== "" ? (
+                        <div style={{ background: "#fff", border: "1px solid #E2E8F0", borderLeft: "4px solid #F59E0B", padding: "16px", borderRadius: "0 8px 8px 0" }}>
+                            <p style={{ margin: 0, fontSize: 15, color: "#334155", fontStyle: "italic", lineHeight: 1.6 }}>
+                                "{issue.feedback}"
+                            </p>
+                        </div>
+                    ) : (
+                        <p style={{ margin: 0, fontSize: 14, color: "#94A3B8", fontStyle: "italic" }}>
+                            No written feedback provided.
+                        </p>
+                    )}
+                </div>
+            )}
             {/*  Citizen Rating Section */}
-            {issue.status === "FINISHED" && !isWorker && !ratingSubmitted && (
+            {issue.status === "FINISHED" && !isWorker && !ratingSubmitted && issue.authorEmail == currentUserEmail &&(
                 <div style={{ background: "linear-gradient(to right, #F0FDF4, #ECFDF5)", border: "1px solid #A7F3D0", borderRadius: 16, padding: "32px", marginBottom: 32, textAlign: "center", boxShadow: "0 4px 6px -1px rgba(16, 185, 129, 0.1)" }}>
                     <div style={{ fontSize: 40, marginBottom: 12 }}>🎉</div>
                     <h3 style={{ margin: "0 0 8px", fontSize: 20, fontWeight: 800, color: "#065F46" }}>This issue has been resolved!</h3>
@@ -350,7 +382,7 @@ export default function IssuePage() {
             )}
 
             {/* If they just submitted the rating, show a thank you message */}
-            {ratingSubmitted && (
+            {ratingSubmitted && !isWorker && (
                 <div style={{ background: "#F0FDF4", border: "1px solid #A7F3D0", borderRadius: 16, padding: "24px", marginBottom: 32, textAlign: "center" }}>
                     <h3 style={{ margin: 0, color: "#065F46" }}>⭐ Thank you for your feedback!</h3>
                 </div>
