@@ -316,7 +316,7 @@ export default function IssuePage() {
                 </div>
             )}
             {/*  Citizen Rating Section */}
-            {issue.status === "FINISHED" && !isWorker && !ratingSubmitted && issue.authorEmail == currentUserEmail &&(
+            {issue.status === "FINISHED" && !isWorker && !ratingSubmitted && currentUserEmail && issue.authorEmail === currentUserEmail &&(
                 <div style={{ background: "linear-gradient(to right, #F0FDF4, #ECFDF5)", border: "1px solid #A7F3D0", borderRadius: 16, padding: "32px", marginBottom: 32, textAlign: "center", boxShadow: "0 4px 6px -1px rgba(16, 185, 129, 0.1)" }}>
                     <div style={{ fontSize: 40, marginBottom: 12 }}>🎉</div>
                     <h3 style={{ margin: "0 0 8px", fontSize: 20, fontWeight: 800, color: "#065F46" }}>This issue has been resolved!</h3>
@@ -382,7 +382,7 @@ export default function IssuePage() {
             )}
 
             {/* If they just submitted the rating, show a thank you message */}
-            {ratingSubmitted && !isWorker && (
+            {ratingSubmitted && issue.authorEmail === currentUserEmail && (
                 <div style={{ background: "#F0FDF4", border: "1px solid #A7F3D0", borderRadius: 16, padding: "24px", marginBottom: 32, textAlign: "center" }}>
                     <h3 style={{ margin: 0, color: "#065F46" }}>⭐ Thank you for your feedback!</h3>
                 </div>
