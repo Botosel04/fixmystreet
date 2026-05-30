@@ -4,7 +4,7 @@
 ### Citizen Experience
 
 **Reporting Interface**
-![Report an Issue](assets/ReportIssue.jpg)
+![Report an Issue](assets/ReportIssue.png)
 *An interactive map interface allowing citizens to easily pinpoint, categorize, and report local infrastructure issues.*
 
 **Secure Authentication**
@@ -12,7 +12,7 @@
 *A secure, role-based login portal distinguishing between everyday citizens and administrative city workers.*
 
 **Citizen Dashboard**
-![Citizen Dashboard](assets/CitizenDashBoard.jpg)
+![Citizen Dashboard](assets/CitizenDashBoard.png)
 *A personalized dashboard where citizens can track the real-time status of their submitted reports.*
 
 **Impact Analytics**
@@ -35,23 +35,21 @@
 *A global backlog filtering system that helps city workers find nearby unassigned tasks using map radius controls.*
 
 **Task Management**
-![Active Tasks](assets/ActiveTasks.jpg)
+![Active Tasks](assets/ActiveTasks.png)
 *A focused view of the tasks a city worker has actively claimed and is currently in the process of resolving.*
 
 **Staff Controls**
-![Staff Controls](assets/StaffControls.jpg)
+![Staff Controls](assets/StaffControls.png)
 *The administrative interface where city workers govern the state machine and officially update a ticket's status.*
 
 **Resolution History (Grid)**
-![Solved History](assets/SolvedHistory.jpg)
+![Solved History](assets/SolvedHistory.png)
 *A historical grid showcasing a worker's successfully resolved municipal issues.*
 
 **Resolution History (Map)**
-![Map View Solved History](assets/MapViewSolvedHistory.jpg)
+![Map View Solved History](assets/MapViewSolvedHistory.png)
 *An interactive map view allowing staff to visualize geographical clusters of completed work across the city.*
-
----
-
+**The map layout can also be toggled for the backlog tab and the active tab.**
 ## Tech Stack
 
 * **Frontend:** React.js, Vite, Bootstrap, Leaflet (Maps)
